@@ -1,0 +1,2588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="gstr_9A" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5cabdd2a-9eaa-4a9f-8dd8-6777e814a786">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="164"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="W_companyID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="W_storeID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_finyrID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_startDate" class="java.util.Date"/>
+	<parameter name="W_endDate" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select s.name store_name
+      ,s.tax_reg_no as gstin
+      ,finyr.code as finyr_code
+      ,finyr.description as finyr_desc
+      ,sum(a.outward_taxable) outward_taxable
+      ,sum(a.0_rated_out_taxable) 0_rated_out_taxable
+      ,sum(a.outward_cgst) outward_cgst
+      ,sum(a.outward_sgst) outward_sgst
+      ,sum(a.outward_vat) outward_vat
+	    ,sum(a.inward_taxable) inward_taxable
+      ,sum(a.0_rated_in_taxable) 0_rated_in_taxable
+      ,sum(a.inward_cgst) inward_cgst
+      ,sum(a.inward_sgst) inward_sgst
+      ,sum(a.inward_vat) inward_vat
+	  ,sum(a.prev_outward_taxable) prev_outward_taxable
+      ,sum(a.0_rated_prev_out_taxable) 0_rated_prev_out_taxable
+from
+(
+    select     m.tran_type
+              ,m.tran_factor
+              ,m.tax_percentage
+              ,sum(m.accessible_amount) accessible_amount
+              ,sum(m.tax_amount) tax_amount
+              ,sum(m.CGST) CGST
+              ,sum(m.SGST) SGST
+              ,sum(m.VAT) VAT
+              ,case when m.tran_type='Input Summary' and m.tax_percentage>0 then sum(m.accessible_amount)
+              else 0 end outward_taxable
+              ,case when m.tran_type='Input Summary' and m.tax_percentage=0 then sum(m.accessible_amount)
+              else 0 end 0_rated_out_taxable
+              ,case when m.tran_type='Input Summary' then sum(m.CGST)
+              else 0 end outward_cgst
+              ,case when m.tran_type='Input Summary' then sum(m.SGST)
+              else 0 end outward_sgst
+              ,case when m.tran_type='Input Summary' then sum(m.VAT)
+              else 0 end outward_vat
+			  ,case when m.tran_type='Output Summary' and m.tax_percentage>0 then sum(m.accessible_amount)
+              else 0 end inward_taxable
+              ,case when m.tran_type='Output Summary' and m.tax_percentage=0 then sum(m.accessible_amount)
+              else 0 end 0_rated_in_taxable
+              ,case when m.tran_type='Output Summary' then sum(m.CGST)
+              else 0 end inward_cgst
+              ,case when m.tran_type='Output Summary' then sum(m.SGST)
+              else 0 end inward_sgst
+              ,case when m.tran_type='Output Summary' then sum(m.VAT)
+              else 0 end inward_vat
+			  ,case when m.tran_type='Prev Input Summary' and m.tax_percentage>0 then sum(m.accessible_amount)
+              else 0 end prev_outward_taxable
+			  ,case when m.tran_type='Prev Input Summary' and m.tax_percentage=0 then sum(m.accessible_amount)
+              else 0 end 0_rated_prev_out_taxable
+
+    from
+    (
+        select x.inv_no
+              ,x.inv_id
+              ,x.tran_type
+              ,x.tran_factor
+              ,x.tax_percentage
+              ,x.accessible_amount
+              ,x.tax_amount
+              ,sum(x.CGST) CGST
+              ,sum(x.SGST) SGST
+              ,sum(x.VAT) VAT
+        from
+        (
+            -- sale st
+            select  'Input Summary'  tran_type
+                   ,1 tran_factor
+                   ,sd.item_id
+                   ,sd.batch_no
+                   ,sd.expiry_date
+                   ,t.name tax_name
+                   ,sd.tax_percentage
+                   /*
+                   ,case
+                       when sd.is_exclusive=0 then sd.tot_amount
+                       else sd.tot_amount-sd.tax_amount end
+                    accessible_amount
+                   */
+                   ,(sd.amount-sd.disc) accessible_amount
+                   ,sd.tax_amount
+                   ,case
+                       when tm.tax_mode='CGST' then tm.amount
+                       else 0 end
+                    CGST
+                   ,case
+                       when tm.tax_mode='SGST' then tm.amount
+                       else 0 end
+                    SGST
+                   ,case
+                       when (tm.tax_mode='IGST') then tm.amount
+                       else 0 end
+                    VAT
+                   ,s.inv_no
+                   ,s.id inv_id
+
+
+
+            from sal_t_sale s
+            inner join sal_t_sale_details sd on s.id=sd.sale_id
+            inner join in_m_item i on sd.item_id=i.id
+            inner join in_m_tax t on sd.tax_id=t.id
+            inner join sal_t_sale_details_tax_mapping tm on sd.id=tm.sale_details_id
+
+            where s.company_id =$P{W_companyID}
+            and s.store_id =$P{W_storeID}
+            and s.finyr_id=$P{W_finyrID}
+            and s.inv_date between $P{W_startDate} and $P{W_endDate}
+            #and s.is_posted=1
+
+            -- sale ed
+            union all
+            -- purchase return st
+            select  'Input Summary'  tran_type
+                   ,1 tran_factor
+                   ,pd.item_id
+                   ,pd.batch_no
+                   ,pd.expiry_date
+                   ,t.name tax_name
+                   ,pd.tax_percentage
+                   ,(pd.amount-pd.disc-pd.item_lot_adj_amount) accessible_amount
+                   ,pd.tax_amount
+                   ,case
+                       when tm.tax_mode='CGST' then tm.amount
+                       else 0 end
+                    CGST
+                   ,case
+                       when tm.tax_mode='SGST' then tm.amount
+                       else 0 end
+                    SGST
+                   ,case
+                       when (tm.tax_mode='IGST') then tm.amount
+                       else 0 end
+                    VAT
+                   ,p.inv_no
+                   ,p.id inv_id
+
+
+
+            from pur_t_purchase_return p
+            inner join pur_t_purchase_return_details pd on p.id=pd.purchase_return_id
+            left outer join com_payment_mode pm on p.inv_mode=pm.id
+            inner join in_m_item i on pd.item_id=i.id
+            inner join in_m_tax t on pd.tax_id=t.id
+            inner join pur_t_purchase_return_details_tax_mapping tm on pd.id=tm.purchase_return_details_id
+
+            where p.company_id =$P{W_companyID}
+            and p.store_id = $P{W_storeID}
+            and p.finyr_id=$P{W_finyrID}
+            and p.inv_date between $P{W_startDate} and $P{W_endDate}
+            #and p.is_posted=1
+
+            -- purchase return ed
+            union all
+            -- purchase st
+            select
+                'Output Summary'  tran_type
+               ,-1 tran_factor
+               ,pd.item_id
+               ,pd.batch_no
+               ,pd.expiry_date
+               ,t.name tax_name
+               ,pd.tax_percentage
+               ,(pd.amount-pd.disc-pd.item_lot_adj_amount) accessible_amount
+               ,pd.tax_amount
+               ,case
+                   when tm.tax_mode='CGST' then tm.amount
+                   else 0 end
+                CGST
+               ,case
+                   when tm.tax_mode='SGST' then tm.amount
+                   else 0 end
+                SGST
+               ,case
+                   when (tm.tax_mode='IGST') then tm.amount
+                   else 0 end
+                VAT
+               ,p.inv_no
+               ,p.id inv_id
+
+            from pur_t_purchase p
+            inner join pur_t_purchase_details pd on p.id=pd.purchase_id
+            left outer join com_payment_mode pm on p.inv_mode=pm.id
+            inner join in_m_item i on pd.item_id=i.id
+            inner join in_m_tax t on pd.tax_id=t.id
+            inner join pur_t_purchase_details_tax_mapping tm on pd.id=tm.purchase_details_id
+
+            where p.company_id =$P{W_companyID}
+            and p.store_id = $P{W_storeID}
+            and p.finyr_id=$P{W_finyrID}
+            and p.inv_date between $P{W_startDate} and $P{W_endDate}
+           #and p.is_posted=1
+
+            -- purchase ed
+            union all
+            -- sale return st
+            select
+                'Output Summary'  tran_type
+               ,-1 tran_factor
+               ,sd.item_id
+               ,sd.batch_no
+               ,sd.expiry_date
+               ,t.name tax_name
+               ,sd.tax_percentage
+               /*
+               ,case
+                   when sd.is_exclusive=0 then sd.tot_amount
+                   else sd.tot_amount-sd.tax_amount end
+                accessible_amount
+               */
+               ,(sd.amount-sd.disc) accessible_amount
+               ,sd.tax_amount
+               ,case
+                   when tm.tax_mode='CGST' then tm.amount
+                   else 0 end
+                CGST
+               ,case
+                   when tm.tax_mode='SGST' then tm.amount
+                   else 0 end
+                SGST
+               ,case
+                   when (tm.tax_mode='IGST') then tm.amount
+                   else 0 end
+                VAT
+               ,s.inv_no
+               ,s.id inv_id
+
+            from sal_t_sale_return s
+            inner join sal_t_sale_return_details sd on s.id=sd.sale_return_id
+            inner join in_m_item i on sd.item_id=i.id
+            inner join in_m_tax t on sd.tax_id=t.id
+            inner join sal_t_sale_return_details_tax_mapping tm on sd.id=tm.sale_return_details_id
+
+            where s.company_id = $P{W_companyID}
+            and s.store_id = $P{W_storeID}
+            and s.finyr_id=$P{W_finyrID}
+            and s.inv_date between $P{W_startDate} and $P{W_endDate}
+            #and s.is_posted=1
+
+
+            -- sale return ed
+                union all
+			        -- prev sale st
+            select  'Prev Input Summary'  tran_type
+                   ,0 tran_factor
+                   ,sd.item_id
+                   ,sd.batch_no
+                   ,sd.expiry_date
+                   ,t.name tax_name
+                   ,sd.tax_percentage
+                   /*
+                   ,case
+                       when sd.is_exclusive=0 then sd.tot_amount
+                       else sd.tot_amount-sd.tax_amount end
+                    accessible_amount
+                   */
+                   ,(sd.amount-sd.disc) accessible_amount
+                   ,sd.tax_amount
+                   ,case
+                       when tm.tax_mode='CGST' then tm.amount
+                       else 0 end
+                    CGST
+                   ,case
+                       when tm.tax_mode='SGST' then tm.amount
+                       else 0 end
+                    SGST
+                   ,case
+                       when (tm.tax_mode='IGST') then tm.amount
+                       else 0 end
+                    VAT
+                   ,s.inv_no
+                   ,s.id inv_id
+
+
+
+            from sal_t_sale s
+            inner join sal_t_sale_details sd on s.id=sd.sale_id
+            inner join in_m_item i on sd.item_id=i.id
+            inner join in_m_tax t on sd.tax_id=t.id
+            inner join sal_t_sale_details_tax_mapping tm on sd.id=tm.sale_details_id
+
+            where s.company_id =$P{W_companyID}
+            and s.store_id =$P{W_storeID}
+            and s.finyr_id=$P{W_finyrID}-1
+            #and s.inv_date between '2018-04-01' and '2019-03-31'
+            #and s.is_posted=1
+
+            -- prev sale ed
+            union all
+            -- prev purchase return st
+            select  'Prev Input Summary'  tran_type
+                   ,0 tran_factor
+                   ,pd.item_id
+                   ,pd.batch_no
+                   ,pd.expiry_date
+                   ,t.name tax_name
+                   ,pd.tax_percentage
+                   ,(pd.amount-pd.disc-pd.item_lot_adj_amount) accessible_amount
+                   ,pd.tax_amount
+                   ,case
+                       when tm.tax_mode='CGST' then tm.amount
+                       else 0 end
+                    CGST
+                   ,case
+                       when tm.tax_mode='SGST' then tm.amount
+                       else 0 end
+                    SGST
+                   ,case
+                       when (tm.tax_mode='IGST') then tm.amount
+                       else 0 end
+                    VAT
+                   ,p.inv_no
+                   ,p.id inv_id
+
+            from pur_t_purchase_return p
+            inner join pur_t_purchase_return_details pd on p.id=pd.purchase_return_id
+            left outer join com_payment_mode pm on p.inv_mode=pm.id
+            inner join in_m_item i on pd.item_id=i.id
+            inner join in_m_tax t on pd.tax_id=t.id
+            inner join pur_t_purchase_return_details_tax_mapping tm on pd.id=tm.purchase_return_details_id
+
+            where p.company_id =$P{W_companyID}
+            and p.store_id = $P{W_storeID}
+            and p.finyr_id=$P{W_finyrID}-1
+            #and p.inv_date between '2018-04-01' and '2019-03-31'
+            #and p.is_posted=1
+
+        )x
+            group by x.inv_no
+                    ,x.inv_id
+                    ,x.tran_type
+                    ,x.tran_factor
+                    ,x.item_id
+                    ,x.batch_no
+                    ,x.expiry_date
+                    ,x.tax_percentage
+                    ,x.accessible_amount
+                    ,x.tax_amount
+
+    )m
+
+    group by m.tran_type,m.tran_factor,m.tax_percentage
+
+
+)a
+inner join gen_m_store s on s.id=$P{W_storeID}
+inner join gen_m_store_financialyear finyr on finyr.id=$P{W_finyrID}
+;]]>
+	</queryString>
+	<field name="store_name" class="java.lang.String"/>
+	<field name="gstin" class="java.lang.String"/>
+	<field name="finyr_code" class="java.lang.String"/>
+	<field name="finyr_desc" class="java.lang.String"/>
+	<field name="outward_taxable" class="java.math.BigDecimal"/>
+	<field name="0_rated_out_taxable" class="java.math.BigDecimal"/>
+	<field name="outward_cgst" class="java.math.BigDecimal"/>
+	<field name="outward_sgst" class="java.math.BigDecimal"/>
+	<field name="outward_vat" class="java.math.BigDecimal"/>
+	<field name="inward_taxable" class="java.math.BigDecimal"/>
+	<field name="0_rated_in_taxable" class="java.math.BigDecimal"/>
+	<field name="inward_cgst" class="java.math.BigDecimal"/>
+	<field name="inward_sgst" class="java.math.BigDecimal"/>
+	<field name="inward_vat" class="java.math.BigDecimal"/>
+	<field name="prev_outward_taxable" class="java.math.BigDecimal"/>
+	<field name="0_rated_prev_out_taxable" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="34" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="1" width="555" height="11" uuid="44ef3c53-a08e-4c39-9b3e-398a805b7e7f"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Form GSTR-9A"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="12" width="555" height="11" uuid="b3aab15a-f1ff-489f-a7ca-376cfeaaa35f"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(See rule80)"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="23" width="555" height="11" uuid="62824e59-a923-4abd-baf7-837518b882f5"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Annual Retrun (For Composition Taxpayer)"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="81">
+			<textField>
+				<reportElement x="24" y="13" width="216" height="11" uuid="42c864b6-0c33-43a1-b16a-20c0a46fd60c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Financial Year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="35" width="216" height="11" uuid="0d9fbf9d-d04c-4cfd-80c6-4d3a14783d63"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Legal name"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="13" width="315" height="11" uuid="dbb0a620-5a74-40a9-acdf-c01541778ea5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{finyr_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="35" width="315" height="11" uuid="95de186f-cdee-4e15-8f7a-612b09e1f616"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="2" width="24" height="11" uuid="6aa95342-3d6c-4c18-9996-3b26fe390932"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pt. I"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="2" width="531" height="11" uuid="96874ce3-c871-4ca9-ae84-9acf3cf31817"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Basic Details"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="13" width="24" height="11" uuid="3b091dec-0486-4954-bfe6-d6d4c086d8c3"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="24" width="24" height="11" uuid="09733c88-5d9d-4ded-911f-d6e675d406ee"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["2"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="35" width="24" height="11" uuid="9716c4e0-e1e8-46a6-a7ec-bba57f3f0649"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3A"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="46" width="24" height="11" uuid="1f72486b-98b3-4e0f-b648-5c6d4e44a323"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3B"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="57" width="24" height="11" uuid="896b6e8a-bd62-4211-b750-a9cb262ece7f"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="68" width="24" height="11" uuid="00b7295a-4657-45c6-8afa-4e103d6a29c3"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["5"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="24" width="216" height="11" uuid="0b9f4e71-f385-4fc1-8e43-9741f54c056f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["GSTIN"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="24" width="315" height="11" uuid="4dfe6d1d-176b-4cb3-9281-d9b21b6115f1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gstin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="46" width="216" height="11" uuid="39f0388c-77dc-4ad5-9a60-4a22ccc84d25"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Trade name ( if any )"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="57" width="216" height="11" uuid="73a5193b-a6cf-4a9a-a700-d678fcd6e720"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Period of composition scheme during the year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="68" width="216" height="11" uuid="e3178fe2-ac72-4742-a297-347ad21652cf"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Aggregate Turnover of Previous Financial Year "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="46" width="315" height="11" uuid="debe26ba-f8e1-4a6f-a437-f487a70b712b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="240" y="57" width="315" height="11" uuid="a310de6b-972e-4bd0-a14c-9d45731afe63"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From "+$F{finyr_desc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="240" y="68" width="315" height="11" uuid="219887ce-89ac-4f15-9429-5d8a868b88af"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{prev_outward_taxable}.doubleValue()+$F{0_rated_prev_out_taxable}.doubleValue()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="484" splitType="Prevent">
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="3" width="531" height="11" uuid="c8ffaaf4-7c6c-49ce-9610-dad71ac4f772"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details of outward and inward Supplies declared in returns filed during the financial year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="14" width="110" height="11" uuid="b350f5cd-1376-42bc-84d3-6af262d5d36f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="274" y="14" width="70" height="11" uuid="f79753ec-f15b-4d8c-a56c-02fcfa25e65e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CGST"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="134" y="14" width="70" height="11" uuid="ff5b11d0-7079-4284-88e2-0af3b717ec6c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Turnover"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="344" y="14" width="70" height="11" uuid="3bebf164-2ed0-4c42-905b-228c9d6193c5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SGST"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="14" width="70" height="11" uuid="07b5ca67-8745-4f08-a970-23faf27b5db5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IGST"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="14" width="71" height="11" uuid="12146218-05bd-4f48-af2f-018d99241eab"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CESS"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="3" width="24" height="11" uuid="7fddd9ae-0da3-480a-82d2-d4cbcdc0bfc6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pt. II"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="14" width="70" height="11" uuid="eb09c801-ebac-4561-8de7-e591868f773f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Rate of Tax"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="25" width="110" height="11" uuid="2bf95eca-d762-47b6-ba47-e65ccc52383a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="134" y="25" width="70" height="11" uuid="52678aa2-09f2-469a-bc12-17f4d08f1ae9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["2"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="25" width="70" height="11" uuid="3f22d48f-0802-4720-bef2-453169118726"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="274" y="25" width="70" height="11" uuid="a58e2141-d67e-4bd6-92ba-f42a3190b23a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="344" y="25" width="70" height="11" uuid="301e8879-8173-4675-8714-8a693db5b0fe"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["5"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="25" width="70" height="11" uuid="67efca8d-9af8-4626-9763-7de04aa3989d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["6"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="25" width="71" height="11" uuid="f8a7836a-e644-494b-9dba-2c43cd9fd773"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["7"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="36" width="24" height="11" uuid="7210ba97-f473-4ccf-82d8-45f0bbfbc6f6"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["6"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="36" width="531" height="11" uuid="e77723e2-61bf-4ee9-bda8-3bdbb6f974e4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details of Outward supplies on which tax is payable as declared in returns filed during the financial year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="47" width="24" height="11" uuid="456f615b-ad24-41f3-bd2a-978c30192579"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["A"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="58" width="24" height="11" uuid="6bfa1ece-2cc3-413f-aa79-abc5f0c02973"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["B"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="69" width="24" height="11" uuid="385e55c1-e2ce-4fba-bc92-b37f57e83459"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["C"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="14" width="24" height="11" uuid="a26fae80-457e-4056-b423-660b066d9654"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="25" width="24" height="11" uuid="0656168a-4b43-4f1f-9838-79e13c6f95e9"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="47" width="110" height="11" uuid="b0411cbb-8b0e-4570-abb4-a3b761dd1d9e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Taxable"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="58" width="110" height="11" uuid="2b25e404-8ccc-4a3c-9625-47fe3b749e8c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Exempted, Nil-rated"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="69" width="110" height="11" uuid="9e7e2d03-6788-4c90-959d-909045399ae0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="134" y="47" width="70" height="11" uuid="8ab47487-9ec4-4e38-b6b3-8ffe150072ab"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="134" y="58" width="70" height="11" uuid="80c70f2d-c286-4390-bf39-95200c7bb8d0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{0_rated_out_taxable}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="134" y="69" width="70" height="11" uuid="6958722e-2cd0-4403-a038-9485d94022ff"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()+$F{0_rated_out_taxable}.doubleValue()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="47" width="70" height="11" uuid="282e0bae-c60a-419c-a8c0-e5c1e5891371"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="58" width="70" height="11" uuid="ae4e0587-b26b-444d-88af-acdd7cbca03e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="69" width="70" height="11" uuid="749fdc2d-d005-4a9d-8c79-95df5a0fdee6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="47" width="70" height="11" uuid="e0270e82-1000-4b1f-98bf-0824a5a5ce66"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()*.01]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="274" y="58" width="70" height="11" uuid="57153846-8c96-4a96-bdab-ad0b255b3c1a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="69" width="70" height="11" uuid="50239534-304d-40e6-8b92-252f025636d9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()*.01]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="47" width="70" height="11" uuid="e4770628-c3ae-415e-9f27-2dff1aed1d25"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()*.01]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="344" y="58" width="70" height="11" uuid="4767eef7-3c84-45cb-a413-3e81a4ff35e5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="69" width="70" height="11" uuid="a3d05b5a-9a1d-415c-8cdb-4eb2c1c9d94b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()*.01]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="47" width="70" height="11" uuid="ed9f6cf7-41a7-4e93-8db6-d1882fb33bc4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="58" width="70" height="11" uuid="17421848-edbc-4f6f-9c91-2504cfc0b035"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="69" width="70" height="11" uuid="867db766-9584-42d6-a846-7f9a94fb468d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="47" width="71" height="11" uuid="75ffa397-56f6-4b8d-87cb-3081eac50c96"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="58" width="71" height="11" uuid="5fde0afa-a63d-4323-a513-2c06314b9d87"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="69" width="71" height="11" uuid="652b7155-ad98-4d79-83ac-1fd5213ece6f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="80" width="24" height="21" uuid="c193be68-694c-4fbd-a22c-0e84ea9c7423"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["7"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="80" width="531" height="21" uuid="ae3acccd-fe02-4de4-b5c6-37b96827d2cd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details of inward supplies on which tax is payable on reverse charge basis (net of debit/credit notes) declared in returns filed during the financial year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="101" width="180" height="11" uuid="e778752c-10e0-41b3-bc5e-f8051ad9240e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="101" width="70" height="11" uuid="7b624a7f-2455-4420-847c-62b12585420b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Taxable Value"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="274" y="101" width="70" height="11" uuid="3104c238-e1e0-4a9b-aedd-1144d25fffd7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CGST"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="344" y="101" width="70" height="11" uuid="65f040c8-aea3-47fb-bb60-b41c52239dca"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SGST"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="101" width="70" height="11" uuid="eda2590d-d218-42fd-9fc9-60c578cdc0dd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IGST"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="101" width="71" height="11" uuid="94984978-8b75-4046-abd6-153770e19639"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CESS"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="112" width="180" height="11" uuid="6926e43c-bf00-4cc9-907b-05cd351666aa"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="112" width="70" height="11" uuid="4acb456a-24b3-49a2-b993-368960739dca"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["2"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="274" y="112" width="70" height="11" uuid="54f96312-2be5-40fc-b7eb-d650258358f0"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="344" y="112" width="70" height="11" uuid="6e9862f7-327c-41be-b140-36800203c31e"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="414" y="112" width="70" height="11" uuid="e5570b56-cd13-4f37-bdab-566b4653f31a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["5"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="484" y="112" width="71" height="11" uuid="b94be131-0171-442a-b67d-eb7c5977d7cb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["6"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="101" width="24" height="11" uuid="1a268c76-1f6b-49ff-bbe4-60165eb27a6c"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="112" width="24" height="11" uuid="ea56119c-da0e-492f-b1ec-f78481fc71bf"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="123" width="24" height="21" uuid="f868f527-868b-4d26-895a-4863f633ae45"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["A"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="144" width="24" height="21" uuid="42e2d7d0-2c6d-4a33-8b91-8554f82b0703"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["B"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="165" width="24" height="11" uuid="c55b177c-91fa-49d0-8076-de00445f2004"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["C"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="176" width="24" height="11" uuid="61147ca4-906a-43df-aaca-c378bce68107"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["D"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="123" width="180" height="21" uuid="f04dcb9c-2306-47e9-a3f8-c5b582b4269a"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Inward supplies liable to reverse charge received from registered persons"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="144" width="180" height="21" uuid="afdb8747-b105-4e3c-9524-3d48875362dd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Inward supplies liable to reverse charge received from unregistered persons"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="165" width="180" height="11" uuid="c33bcdec-1a47-4073-8547-9278cd167bc1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Import of services"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="176" width="180" height="11" uuid="b1542ad6-7629-410e-8cc4-d1f21fe12177"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Net Tax Payable on (A), (B) and (C) above"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="123" width="70" height="21" uuid="604ac853-6e23-4f95-8e87-34eb2ee9a70b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_taxable}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="144" width="70" height="21" uuid="ff9b0f61-6f01-4373-88b2-3d91f1fe40aa"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="165" width="70" height="11" uuid="9f3b4191-1918-44c9-a759-3be7377c824d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="176" width="70" height="11" uuid="5fd45253-f94d-44ee-a840-f2d7b3fc072f"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_taxable}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="123" width="70" height="21" uuid="725ca860-7090-4928-8c1e-6ac8e4c0bfac"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_cgst}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="144" width="70" height="21" uuid="4805713b-4024-4ec8-92be-da763ee280e1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="165" width="70" height="11" uuid="77cd7e20-597d-45bb-93f3-733f11c5126b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="176" width="70" height="11" uuid="6d72dd0f-5c8b-413a-bcce-1ce5bcd48080"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_cgst}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="123" width="70" height="21" uuid="27d74d7d-5c0f-40a8-82df-e0f49cf7fd19"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_sgst}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="414" y="123" width="70" height="21" uuid="7ad0ef78-b81a-4422-94aa-bd67ce3c2559"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_vat}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="484" y="123" width="71" height="21" uuid="c8355f98-d8dd-4f25-b443-3922becf7d1d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="144" width="70" height="21" uuid="e986b191-bc25-455d-b60b-dafda08c14f7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="414" y="144" width="70" height="21" uuid="2b6791f5-46ff-4f6f-9459-398b92cfee70"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="484" y="144" width="71" height="21" uuid="96236bda-f55d-4c6c-8430-c9b7041b74f1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="165" width="70" height="11" uuid="3cb2b52b-765d-4e64-a361-653772a1c7e2"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="414" y="165" width="70" height="11" uuid="ae8ea07f-7251-4e28-81a6-7d78c707ced2"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="484" y="165" width="71" height="11" uuid="79d21fd3-9a24-4e35-8c2a-c62b4e6e1a57"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="176" width="70" height="11" uuid="ba67b8e2-0990-47e8-ac9d-5f1ba9d36910"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_sgst}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="414" y="176" width="70" height="11" uuid="7bb1eb8a-2008-4b97-b802-0251e7ab3367"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inward_vat}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="484" y="176" width="71" height="11" uuid="bfe78fdd-20c4-4d3e-a9c9-9ac40b8e576b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="187" width="24" height="11" uuid="0c370a8f-09a6-4ac3-9bf9-da6575593e8b"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["8"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="187" width="531" height="11" uuid="a0e54ce2-1903-49da-9149-07038c74ecd6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details of other inward supplies as declared in returns filed during the financial year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="198" width="24" height="21" uuid="c795848b-6daa-4460-9d20-937ec0b18c1d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["A"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="198" width="180" height="21" uuid="e0cf3c55-7258-4c3a-bac6-470e245a52d9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Inward supplies from registered persons (other than 7A above)"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="198" width="70" height="21" uuid="b50a53b0-0d08-47bb-807d-c76805356ffd"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="198" width="70" height="21" uuid="ffcb2cae-210f-4331-b1d7-45b2e1dadb82"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="198" width="70" height="21" uuid="cf0de513-a104-4556-80ce-f23f899058de"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="414" y="198" width="70" height="21" uuid="359f3191-bb4b-4014-9cf3-d088bc8a7c68"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="484" y="198" width="71" height="21" uuid="89a7b26c-04ce-4798-a40d-d7461ffc6596"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="219" width="24" height="11" uuid="908b24b0-03c9-4cdb-a990-37a015bf1568"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["B"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="219" width="180" height="11" uuid="3ce22123-fc8d-4f38-af2f-68b8ae2a5995"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Import of Goods"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="219" width="70" height="11" uuid="3169cc98-d5b0-4a0e-84e4-6e8e628c15cb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="274" y="219" width="70" height="11" uuid="dbbe374e-f11d-4743-bdd9-4c82ea970275"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="344" y="219" width="70" height="11" uuid="54230304-a09d-4666-8e6c-2ae81e52968d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="414" y="219" width="70" height="11" uuid="18e1684f-f48a-471c-903f-07d34278e715"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="484" y="219" width="70" height="11" uuid="c90b6160-7c52-4601-8615-45d7e38c773b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0.00]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="230" width="24" height="11" uuid="529d60cb-01cf-4dac-9d7b-c7edcd61571b"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pt. III"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="230" width="531" height="11" uuid="f68be095-724b-4f4b-b5dc-80d8360a1e64"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details of tax paid as declared in returns filed during the financial year"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="241" width="24" height="11" uuid="074c1d49-1a4a-4b0f-87de-9343ef17c9c3"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["9"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="252" width="24" height="11" uuid="13295326-5fa0-4762-a898-3463bbf341b9"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="263" width="24" height="11" uuid="ef322447-f6e8-43d7-a416-87f983ec608e"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="274" width="24" height="11" uuid="34a5faa2-bf57-4c2c-bc11-c0ba63e805c8"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="285" width="24" height="11" uuid="c794bdd8-ba90-4311-aadf-6386cb44e3fc"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="296" width="24" height="11" uuid="db7bf963-ee24-42a9-b1ec-bbbf36b0bff5"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="307" width="24" height="11" uuid="bb37f6fd-ef21-4d50-bd63-bae55a7166dd"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="318" width="24" height="11" uuid="f41bac54-f46c-49f9-a2e5-92ad0ba22f49"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="329" width="24" height="11" uuid="bb6ac570-8388-4fe2-b39f-0f425b79dd58"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="241" width="180" height="11" uuid="33057ad2-91b1-476e-bce0-7a9df3dd2b98"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Description"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="252" width="180" height="11" uuid="d4e3ed83-e469-45f4-857a-9bad8454b2e1"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["1"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="241" width="180" height="11" uuid="6b642b08-ddb0-4800-beac-a8d701c182be"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total tax payable"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="241" width="171" height="11" uuid="8493ec0d-fedd-4e21-929f-d7e2827dc059"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Paid"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="252" width="180" height="11" uuid="6075412d-23aa-4bf9-9c77-813007996bc6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["2"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="252" width="171" height="11" uuid="2ac0953a-6cf5-42cb-bea8-04077c704e11"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="263" width="180" height="11" uuid="b64c1fb7-0db1-4098-a1a1-7dba80e57c84"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Integrated Tax"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="274" width="180" height="11" uuid="60a567e8-89fb-4471-8489-ead6f5271b98"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Central Tax"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="285" width="180" height="11" uuid="18febe8e-9578-43de-ba90-4fc67d640e89"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["State/UT Tax"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="296" width="180" height="11" uuid="2965e950-2a44-4f64-a9f3-9c56361cadec"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cess"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="307" width="180" height="11" uuid="26d6ccb6-a737-47f7-a4c9-2896e5e9ecbb"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Interest"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="318" width="180" height="11" uuid="69a9d566-3b85-428b-b97c-e37693ea1759"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Late fee"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="24" y="329" width="180" height="11" uuid="27226a01-1e35-4c15-8df3-63fa0d75cb3c"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Penalty"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="263" width="180" height="11" uuid="ea1481c5-c20c-42ad-85ac-fc10c5b1d593"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_vat}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="274" width="180" height="11" uuid="8c38be45-82e3-41da-ab67-04a2aaf3741b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()*.01]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement isPrintRepeatedValues="false" x="204" y="285" width="180" height="11" uuid="686e0755-6d01-4254-9122-c759e64391e4"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{outward_taxable}.doubleValue()*.01]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="296" width="180" height="11" uuid="cc242a63-9c42-4c38-aa55-c0f754e76337"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="307" width="180" height="11" uuid="a5205a25-cc3b-46f4-a539-8e6cf9d8e92d"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="318" width="180" height="11" uuid="5e451a69-60ad-4b78-b419-485eb7a18b9b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="204" y="329" width="180" height="11" uuid="8ccc1489-6f45-4efc-a834-b83f793bfd67"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="263" width="171" height="11" uuid="029f0a71-0868-4db7-b185-8153f8ba5fa7"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="274" width="171" height="11" uuid="f4017e12-dcd7-48fd-8f90-bbb35133a156"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="285" width="171" height="11" uuid="c1936305-1246-44fe-a321-d0920fa36c75"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="296" width="171" height="11" uuid="4effec5e-e413-4fee-8860-95131421ad97"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="307" width="171" height="11" uuid="dce7771e-337e-4dc8-8f97-3e8ae3dd1691"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="318" width="171" height="11" uuid="55230ec6-3743-4ae7-85d2-738d8cf68610"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement isPrintRepeatedValues="false" x="384" y="329" width="171" height="11" uuid="2758abd7-558c-4634-9756-750aa8256dfa"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="31" splitType="Stretch"/>
+	</summary>
+</jasperReport>

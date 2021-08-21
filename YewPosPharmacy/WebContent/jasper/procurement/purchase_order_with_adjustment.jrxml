@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="purchase_order_with_adjustment" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5cabdd2a-9eaa-4a9f-8dd8-6777e814a786">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="W_companyID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="W_storeID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_finyrID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_distributorID" class="java.lang.Integer"/>
+	<parameter name="W_startDate" class="java.util.Date"/>
+	<parameter name="W_endDate" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select x.purchase_order_id
+          ,x.inv_no
+          ,x.inv_date
+          ,x.distributor_id
+          ,x.distributor_name
+          ,x.remarks
+
+
+          ,x.item_name
+          ,x.item_id
+          ,x.pack_qty
+          ,x.conversion
+          ,x.loose_qty
+          ,x.stock_qty
+          ,x.pack_unit_name
+
+          ,x.rec_inv_no
+          ,x.rec_inv_date
+          ,x.expiry_date
+          ,x.expiry_date_format
+          ,x.batch_no
+          ,x.rec_pack_qty
+          ,x.rec_conversion
+          ,x.rec_loose_qty
+          ,x.rec_stock_qty
+          ,x.rec_calculate_loose_qty
+          ,x.rec_free_qty
+
+
+          ,s.name store_name
+          ,s.address
+          ,s.phone
+          ,s.email
+          ,c.currency_code
+
+
+
+from
+(
+  select   po.id purchase_order_id
+          ,po.inv_no
+          ,po.inv_date
+          ,po.distributor_id
+          ,d.name distributor_name
+          ,po.remarks
+
+
+
+
+          ,i.name item_name
+          ,pod.item_id
+          ,pod.pack_qty
+          ,pod.conversion
+          ,pod.loose_qty
+          ,concat(pod.pack_qty,'/',convert(pod.loose_qty,UNSIGNED INTEGER) ,' [',convert( ((pod.pack_qty*pod.conversion)+pod.loose_qty),UNSIGNED INTEGER),'] ') stock_qty
+          ,u.code pack_unit_name
+
+
+          ,pd.inv_no rec_inv_no
+          ,pd.inv_date rec_inv_date
+          ,pd.expiry_date
+          ,convert(DATE_FORMAT(pd.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+          ,pd.batch_no
+          ,pd.pack_qty rec_pack_qty
+          ,pd.conversion rec_conversion
+          ,pd.loose_qty rec_loose_qty
+          ,concat(pd.pack_qty,'/',convert(pd.loose_qty,UNSIGNED INTEGER) ,' [',convert( ((pd.pack_qty*pd.conversion)+pd.loose_qty),UNSIGNED INTEGER),'] ') rec_stock_qty
+          ,((pd.pack_qty*pd.conversion)+pd.loose_qty) rec_calculate_loose_qty
+          ,pd.free_qty rec_free_qty
+
+
+
+      from pur_t_purchase_order po
+      inner join pur_t_purchase_order_details pod on po.id=pod.purchase_order_id
+      inner join in_m_distributor d on po.distributor_id=d.id
+      left outer join in_m_unit u on pod.pack_unit_id=u.id
+      left outer join pur_t_purchase_details pd on pd.purchase_order_id=pod.purchase_order_id and pd.item_id=pod.item_id
+
+      inner join in_m_item i on pod.item_id=i.id
+      where po.company_id=$P{W_companyID}
+      and po.store_id=$P{W_storeID}
+      and po.finyr_id=$P{W_finyrID}
+      and po.inv_date between $P{W_startDate} and $P{W_endDate}
+      and (
+            ( po.distributor_id=$P{W_distributorID} and ifnull($P{W_distributorID},0) <> 0   )
+
+            or
+            ( ifnull($P{W_distributorID},0)=0  )
+
+          )
+)x
+  inner join gen_m_store s on s.id=$P{W_storeID}
+  left join in_m_currency c on s.currency_id=c.id
+  where s.id=$P{W_storeID}
+  order by x.distributor_id
+          ,x.distributor_name
+          ,x.inv_no
+     ;]]>
+	</queryString>
+	<field name="purchase_order_id" class="java.lang.Long"/>
+	<field name="inv_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="distributor_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="distributor_name" class="java.lang.String"/>
+	<field name="remarks" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String"/>
+	<field name="item_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pack_qty" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="conversion" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="loose_qty" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stock_qty" class="java.lang.String"/>
+	<field name="pack_unit_name" class="java.lang.String"/>
+	<field name="rec_inv_no" class="java.lang.String"/>
+	<field name="rec_inv_date" class="java.sql.Date"/>
+	<field name="expiry_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiry_date_format" class="java.lang.String"/>
+	<field name="batch_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rec_pack_qty" class="java.lang.Long"/>
+	<field name="rec_conversion" class="java.lang.Long"/>
+	<field name="rec_loose_qty" class="java.lang.Long"/>
+	<field name="rec_stock_qty" class="java.lang.String"/>
+	<field name="rec_calculate_loose_qty" class="java.math.BigInteger"/>
+	<field name="rec_free_qty" class="java.math.BigDecimal"/>
+	<field name="store_name" class="java.lang.String"/>
+	<field name="address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="currency_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="rec_pack_total" class="java.math.BigDecimal" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{rec_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="rec_loose_total" class="java.math.BigDecimal" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{rec_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="rec_calculate_loose_total" class="java.math.BigDecimal" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{rec_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<group name="distributor">
+		<groupExpression><![CDATA[$F{distributor_id}]]></groupExpression>
+		<groupHeader>
+			<band height="13">
+				<staticText>
+					<reportElement mode="Transparent" x="1" y="1" width="555" height="12" forecolor="#000000" backcolor="#DEDADE" uuid="54a045fa-6902-4227-8382-330bdd25cddf"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement isPrintRepeatedValues="false" x="2" y="0" width="241" height="11" uuid="bd0c4aad-d1bf-48ad-be35-9696d48e430b"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{distributor_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="1"/>
+		</groupFooter>
+	</group>
+	<group name="item_name">
+		<groupExpression><![CDATA[$F{item_id}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="10">
+				<staticText>
+					<reportElement mode="Opaque" x="1" y="0" width="555" height="10" forecolor="#000000" backcolor="#DEDADE" uuid="98336b19-a594-4f79-8866-cf09cc2d5076"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<line>
+					<reportElement x="2" y="0" width="549" height="1" forecolor="#000000" uuid="81e52cb5-b574-4c8d-b56f-392801989f06"/>
+					<graphicElement>
+						<pen lineWidth="0.3" lineStyle="Dashed"/>
+					</graphicElement>
+				</line>
+				<textField pattern="###0" isBlankWhenNull="true">
+					<reportElement x="441" y="0" width="47" height="10" uuid="3097152f-681a-4287-bc17-12130ba8d4a5"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Serif" size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{rec_pack_total}.toString() + "/" + $V{rec_loose_total}.toString()+ "[" + $V{rec_calculate_loose_total}.toString()+ "]"]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="441" y="5" width="40" height="14" uuid="94f11e1b-8840-4db3-a14d-6997d9764ed4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yy">
+				<reportElement x="482" y="5" width="62" height="14" uuid="2f1cc861-f7f2-4ad2-8ddc-c5b192abeb07"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="441" y="22" width="40" height="14" uuid="58ec7eba-50ec-40a1-bd11-c71d7ab0704e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Time:]]></text>
+			</staticText>
+			<textField pattern="HH.mm">
+				<reportElement x="482" y="22" width="62" height="14" uuid="4a8ca7d6-a84d-4c7e-a9c7-133caefbaac0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_CH" x="138" y="2" width="212" height="17" uuid="e00431df-ff77-408a-8d4d-233c39560030"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_CH" x="138" y="18" width="212" height="16" uuid="0390ff5c-32e6-49de-8701-78e1bcb5855a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_CH" x="182" y="34" width="36" height="13" uuid="f744341d-e2c6-4683-a561-0960f77cde85"/>
+				<textElement>
+					<font fontName="SansSerif" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Phone : ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_CH" x="218" y="34" width="100" height="13" uuid="1e728073-0f20-4f98-9b15-3c77394f0eea"/>
+				<textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_CH" x="182" y="47" width="36" height="13" uuid="2b564050-62cd-4fd7-bebb-b7fe82a00477"/>
+				<textElement>
+					<font fontName="SansSerif" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Email : ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_CH" x="218" y="47" width="100" height="13" uuid="b5903f38-80f9-4b84-9e7e-df7f1aa14558"/>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="40">
+			<line>
+				<reportElement x="0" y="27" width="555" height="1" uuid="fef4d632-11df-43c2-b763-25dc94fd4446"/>
+			</line>
+			<staticText>
+				<reportElement x="41" y="28" width="44" height="10" uuid="a6f7061d-a239-4969-9457-97ca921601a9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Invoice No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1" y="0" width="555" height="14" forecolor="#000000" backcolor="#CCCCCC" uuid="3bab1b33-3eaa-40e2-b7d7-21b6d169e70c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="2" width="190" height="12" uuid="f29630e5-38a0-45a0-9e0a-621b339c4073"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Purchase Order With Adjustment Report From]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="202" y="14" width="42" height="11" uuid="ff1b3db6-765a-4068-8548-6e4123ef499f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Currency :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="519" y="28" width="31" height="10" uuid="64369e8f-42a5-40ef-bd58-bff3a3c823e8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Expity]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="243" y="15" width="100" height="11" uuid="4cd14cab-2e95-43f7-b63b-653b82b76fe8"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{currency_code}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="39" width="555" height="1" uuid="8ecfa023-b411-4c8c-8300-86ef79ad1ba0"/>
+			</line>
+			<textField>
+				<reportElement x="421" y="14" width="90" height="12" uuid="edd4af23-addb-4d4f-b86e-048168e1e33b"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="513" y="14" width="39" height="11" uuid="58f15d1f-608c-452f-8f4b-38191e0a1dd3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="295" y="2" width="45" height="12" uuid="b6bb3d83-d2ac-41de-9824-5362eb446f24"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{W_startDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="355" y="2" width="51" height="12" uuid="96a0347f-9f3f-4323-b14a-1d32fb95f512"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{W_endDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="338" y="2" width="14" height="12" uuid="57d2dd0a-ea73-4dbd-a73b-7c73772a60a8"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="8" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[To]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="28" width="33" height="10" uuid="7b867f73-935b-4385-bf52-bbf2eef27a43"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Date#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="28" width="29" height="10" uuid="e0bb2faf-2150-4734-97e3-6e023b59ae67"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Rec Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="138" y="28" width="89" height="10" uuid="2531d517-2e36-4ba2-8770-b1f1fdb7e2dc"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="331" y="28" width="37" height="10" uuid="a3e5963c-a972-4207-b6ea-e2947b88a132"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Ord Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="373" y="28" width="41" height="10" uuid="69d2cdc8-87dd-45c5-b34b-56ecc4fe3915"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Rec Inv]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="423" y="28" width="35" height="10" uuid="5d0e1c0e-445a-49f0-8879-130f667ff009"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Rec Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="489" y="28" width="30" height="10" uuid="887d569c-bece-48fb-b6ce-0c54bb1af624"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Batch]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="306" y="28" width="26" height="10" uuid="6f25ae40-f245-406c-b51d-990f29ae3ee9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="1" y="0" width="555" height="10" forecolor="#000000" backcolor="#DEDADE" uuid="7563c9fd-1db8-4c7f-b30b-3826c3b488df"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="100" y="0" width="33" height="10" uuid="d5659e8e-05b2-49e7-81a6-e25146910f3e"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Serif" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inv_date}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="461" y="0" width="27" height="10" uuid="12991ac3-9755-46fe-a395-6560c40e187c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rec_stock_qty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="138" y="0" width="152" height="10" printWhenGroupChanges="item_name" uuid="7c598ec0-f7de-4ab2-8afb-f9d57a4eaa6f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Serif" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="333" y="0" width="35" height="10" printWhenGroupChanges="item_name" uuid="d8624e54-0c94-4f7a-9e66-5fe092d1b096"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{stock_qty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="489" y="0" width="30" height="10" uuid="db0f9028-d0dd-4402-9120-4dc0d0d8e7d8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{batch_no}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="373" y="0" width="52" height="10" uuid="1a889687-5453-4a90-b9f6-90d5323494e9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rec_inv_no}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0">
+				<reportElement isPrintRepeatedValues="false" mode="Transparent" x="42" y="0" width="58" height="10" uuid="a029d005-fe69-4a17-9c6c-3d4dd75646b3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Serif" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inv_no}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="519" y="0" width="31" height="10" uuid="9e342ae5-f490-4cd8-8513-f16b10a2b8f2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expiry_date_format}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="427" y="0" width="31" height="10" uuid="43ec8ca1-2753-43cd-8c4b-6a3d6630592d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rec_inv_date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="298" y="0" width="34" height="10" printWhenGroupChanges="item_name" uuid="3bd44d7f-5af7-4797-8a7d-d0f9ed92af33"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pack_unit_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="14" splitType="Stretch">
+			<line>
+				<reportElement x="6" y="1" width="546" height="1" uuid="cb88fa79-ee07-47bd-8c87-587b75deb6f6"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

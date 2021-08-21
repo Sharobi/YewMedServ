@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="GST_B2CS_REPORT" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5cabdd2a-9eaa-4a9f-8dd8-6777e814a786">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="33"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.sheet.names.all" value="Data/Footnotes"/>
+	<property name="net.sf.jasperreports.exports.xls.font.size.fix.enabled" value="true"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="W_companyID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="W_storeID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_finyrID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_startDate" class="java.util.Date"/>
+	<parameter name="W_endDate" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select
+        a.place_of_supply
+        ,a.tax_percentage
+        ,sum(a.taxable_amount) taxable_amount
+        ,sum(a.tax_amount) tax_amount
+        ,0 cess_amount
+
+        ,(
+          select sum(amount-disc) from sal_t_sale_details
+          where company_id =$P{W_companyID}
+            and store_id = $P{W_storeID}
+            and finyr_id  = $P{W_finyrID}
+            and inv_date >= $P{W_startDate} and inv_date <= $P{W_endDate}
+            and tax_percentage > 0
+        ) total_taxable_amount
+        ,0 total_cess_amount
+  from
+  (
+
+            select sd.item_id
+                  ,sd.batch_no
+                  ,sd.expiry_date
+
+                  ,sd.tot_amount
+
+                  ,sd.tax_id
+                  ,sd.tax_percentage
+                  ,sd.tax_amount
+                  ,sd.is_group_tax
+                  ,sd.tax_mode
+
+                  ,(sd.amount-sd.disc) taxable_amount
+                  ,(sd.amount) total_amount
+
+                  ,concat(if(sta.state_code,concat(sta.state_code,'-'),null) ,sta.name ) customer_state
+                  ,concat(if(stas.state_code,concat(stas.state_code,'-'),'') ,stas.name ) store_state
+
+                  ,ifnull( concat(if(sta.state_code,concat(sta.state_code,'-'),null) ,sta.name ) , concat(if(stas.state_code,concat(stas.state_code,'-'),'') ,stas.name ) ) place_of_supply
+
+
+
+            from sal_t_sale s
+            inner join sal_t_sale_details sd on s.id=sd.sale_id
+            left outer join in_m_customer c on s.customer_id=c.id
+            left outer join com_m_states sta on c.state_id=sta.id
+            left outer join gen_m_store sto on s.store_id=sto.id
+            left outer join com_m_states stas on sto.state_id=stas.id
+
+
+            where s.company_id =$P{W_companyID}
+            and s.store_id = $P{W_storeID}
+            and s.finyr_id  = $P{W_finyrID}
+            and s.inv_date >= $P{W_startDate} and s.inv_date <= $P{W_endDate}
+            and sd.tax_percentage > 0
+
+   )a
+   group by a.place_of_supply,a.tax_percentage
+
+
+ ;]]>
+	</queryString>
+	<field name="place_of_supply" class="java.lang.String"/>
+	<field name="tax_percentage" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="taxable_amount" class="java.math.BigDecimal"/>
+	<field name="tax_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cess_amount" class="java.lang.Long"/>
+	<field name="total_taxable_amount" class="java.math.BigDecimal"/>
+	<field name="total_cess_amount" class="java.lang.Long"/>
+	<variable name="total_taxable" class="java.math.BigDecimal" resetType="None" incrementType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{taxable_amount}]]></variableExpression>
+	</variable>
+	<variable name="total_cess" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{cess_amount}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="41" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="42">
+			<staticText>
+				<reportElement x="0" y="28" width="103" height="14" uuid="a6f7061d-a239-4969-9457-97ca921601a9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="28" width="101" height="14" uuid="6f25ae40-f245-406c-b51d-990f29ae3ee9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Taxable Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="105" y="28" width="85" height="14" uuid="49a6dac1-b819-437d-92ec-6146ca4833ae"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Place of Supply]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="239" y="28" width="30" height="14" uuid="f12e448b-b5ed-4f22-8f50-98ab00273630"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Rate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="103" height="14" uuid="5237019e-44ff-49a1-8de0-4d91664842a1"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Summary For B2CS(7)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="379" y="28" width="77" height="14" uuid="24c83eb1-83b9-44c3-8b47-1e02133a26a4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Cess Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="457" y="28" width="98" height="14" uuid="e7d12b86-5219-4fd9-9031-da6337635fc5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[E-Commerce GSTIN]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="278" y="14" width="101" height="14" uuid="f1ce65f0-d644-48f1-86f1-e4fbe75135a0"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_taxable_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="379" y="14" width="77" height="14" uuid="7f90fbcb-1a71-4559-8363-e7dd48a12337"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_cess_amount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="0" width="101" height="14" uuid="6bcfa2ca-d114-4213-8540-07c32717bb35"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Taxable Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="379" y="0" width="77" height="14" uuid="844cb66f-5de7-470c-aee0-6faff4b276ea"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Cess Value]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField pattern="###0.00">
+				<reportElement x="278" y="0" width="101" height="14" uuid="4b8c599e-bc76-4640-a06c-e3935f049043"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{taxable_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="105" y="0" width="133" height="14" uuid="2c2df010-9ca9-466e-9c13-3937f4d13ce3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{place_of_supply}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement x="239" y="0" width="30" height="14" uuid="f5ddffb0-e2aa-4e95-9759-726b1c4cd07c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tax_percentage}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="103" height="14" uuid="ffc7fb3b-501e-4b85-a245-3a3c6d721bbd"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["OE"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="379" y="0" width="77" height="14" uuid="b15eb89b-30b1-4b7f-85d5-0cae91e3d4b2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cess_amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="15" splitType="Stretch"/>
+	</summary>
+</jasperReport>

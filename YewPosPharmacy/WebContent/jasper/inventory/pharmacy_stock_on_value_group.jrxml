@@ -1,0 +1,1147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pharmacy_stock_on_value_group" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5cabdd2a-9eaa-4a9f-8dd8-6777e814a786">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="W_companyID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="W_storeID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_finyrID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_manufacturerID" class="java.lang.Integer"/>
+	<parameter name="W_contentID" class="java.lang.Integer"/>
+	<parameter name="W_itemID" class="java.lang.Integer"/>
+	<parameter name="W_asOnDate" class="java.util.Date"/>
+	<parameter name="W_noOfExpiryMonth" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select x.item_id
+        ,y.name item_name
+        ,g.name group_name
+        ,x.batch_no
+        ,x.expiry_date
+        ,x.expiry_date_format
+        ,x.conversion
+        ,x.mrp
+        ,x.pack_qty
+        ,x.loose_qty
+        ,x.calculate_loose_qty
+        ,x.stock_amount
+        ,x.stock_qty
+
+        ,x.sale_amount
+        ,x.sale_qty
+
+        ,x.purchase_return_amount
+        ,x.purchase_return_qty
+
+        ,x.purchase_amount
+        ,x.purchase_qty
+
+        ,x.sale_return_amount
+        ,x.sale_return_qty
+
+        ,x.issue_amount
+        ,x.issue_pack_qty
+        ,x.issue_loose_qty
+        ,x.issue_calculate_loose_qty
+        ,x.issue_qty
+
+        ,x.receipt_amount
+        ,x.receipt_pack_qty
+        ,x.receipt_loose_qty
+        ,x.receipt_calculate_loose_qty
+        ,x.receipt_qty
+
+        ,x.closing_amount
+        ,x.closing_pack_qty
+        ,x.closing_loose_qty
+        ,x.closing_calculate_loose_qty
+        ,x.closing_qty
+
+        ,s.name store_name
+        ,s.address
+        ,s.phone
+        ,s.email
+        ,c.currency_code
+
+  from
+  (
+     select  a.item_id
+                ,a.batch_no
+                ,a.expiry_date
+                ,a.expiry_date_format
+                ,a.pack_unit_id
+                ,a.conversion
+                ,a.mrp
+                ,a.pack_qty
+                ,a.loose_qty
+                ,a.calculate_loose_qty
+
+                ,a.sale_pack_qty
+                ,a.sale_loose_qty
+                ,a.sale_calculate_loose_qty
+
+                ,a.sale_return_pack_qty
+                ,a.sale_return_loose_qty
+                ,a.sale_return_calculate_loose_qty
+
+                ,a.purchase_pack_qty
+                ,a.purchase_loose_qty
+                ,a.purchase_calculate_loose_qty
+
+                ,a.purchase_return_pack_qty
+                ,a.purchase_return_loose_qty
+                ,a.purchase_return_calculate_loose_qty
+
+                ,((a.pack_qty+(a.loose_qty/a.conversion))*a.mrp) stock_amount
+                ,concat(a.pack_qty,'/',convert(a.loose_qty,UNSIGNED INTEGER) ,' [',convert(a.calculate_loose_qty,UNSIGNED INTEGER),'] ') stock_qty
+
+                ,((a.sale_pack_qty+(a.sale_loose_qty/a.conversion))*a.mrp) sale_amount
+                ,concat(a.sale_pack_qty,'/',convert(a.sale_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.sale_calculate_loose_qty,UNSIGNED INTEGER),'] ') sale_qty
+
+                ,((a.purchase_return_pack_qty+(a.purchase_return_loose_qty/a.conversion))*a.mrp) purchase_return_amount
+                ,concat(a.purchase_return_pack_qty,'/',convert(a.purchase_return_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.purchase_return_calculate_loose_qty,UNSIGNED INTEGER),'] ') purchase_return_qty
+
+                ,((a.purchase_pack_qty+(a.purchase_loose_qty/a.conversion))*a.mrp) purchase_amount
+                ,concat(a.purchase_pack_qty,'/',convert(a.purchase_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.purchase_calculate_loose_qty,UNSIGNED INTEGER),'] ') purchase_qty
+
+                ,((a.sale_return_pack_qty+(a.sale_return_loose_qty/a.conversion))*a.mrp) sale_return_amount
+                ,concat(a.sale_return_pack_qty,'/',convert(a.sale_return_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.sale_return_calculate_loose_qty,UNSIGNED INTEGER),'] ') sale_return_qty
+
+                -- issue
+                ,a.issue_pack_qty
+                ,a.issue_loose_qty
+                ,a.issue_calculate_loose_qty
+                ,((a.issue_pack_qty+(a.issue_loose_qty/a.conversion))*a.mrp) issue_amount
+                ,concat(a.issue_pack_qty,'/',convert(a.issue_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.issue_calculate_loose_qty,UNSIGNED INTEGER),'] ') issue_qty
+
+                -- receipt
+                ,a.receipt_pack_qty
+                ,a.receipt_loose_qty
+                ,a.receipt_calculate_loose_qty
+                ,((a.receipt_pack_qty+(a.receipt_loose_qty/a.conversion))*a.mrp) receipt_amount
+                ,concat(a.receipt_pack_qty,'/',convert(a.receipt_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.receipt_calculate_loose_qty,UNSIGNED INTEGER),'] ') receipt_qty
+
+                -- closing
+                ,a.closing_pack_qty
+                ,a.closing_loose_qty
+                ,a.closing_calculate_loose_qty
+                ,((a.closing_pack_qty+(a.closing_loose_qty/a.conversion))*a.mrp) closing_amount
+                ,concat(a.closing_pack_qty,'/',convert(a.closing_loose_qty,UNSIGNED INTEGER) ,' [',convert(a.closing_calculate_loose_qty,UNSIGNED INTEGER),'] ') closing_qty
+       from
+       (
+         select  s.item_id
+                ,s.batch_no
+                ,s.expiry_date
+                ,s.expiry_date_format
+                ,s.pack_unit_id
+                ,s.conversion
+                ,max(s.mrp) mrp
+                ,sum(s.pack_qty) pack_qty
+                ,sum(s.loose_qty) loose_qty
+                ,sum(s.calculate_loose_qty) calculate_loose_qty
+
+                ,sum(s.sale_pack_qty) sale_pack_qty
+                ,sum(s.sale_loose_qty) sale_loose_qty
+                ,sum(s.sale_calculate_loose_qty) sale_calculate_loose_qty
+
+                ,sum(s.purchase_return_pack_qty) purchase_return_pack_qty
+                ,sum(s.purchase_return_loose_qty) purchase_return_loose_qty
+                ,sum(s.purchase_return_calculate_loose_qty) purchase_return_calculate_loose_qty
+
+                ,sum(s.purchase_pack_qty) purchase_pack_qty
+                ,sum(s.purchase_loose_qty) purchase_loose_qty
+                ,sum(s.purchase_calculate_loose_qty) purchase_calculate_loose_qty
+
+                ,sum(s.sale_return_pack_qty) sale_return_pack_qty
+                ,sum(s.sale_return_loose_qty) sale_return_loose_qty
+                ,sum(s.sale_return_calculate_loose_qty) sale_return_calculate_loose_qty
+
+
+                -- issue
+                ,( sum(s.sale_calculate_loose_qty) + sum(s.purchase_return_calculate_loose_qty) ) issue_calculate_loose_qty
+                ,FLOOR(( sum(s.sale_calculate_loose_qty) + sum(s.purchase_return_calculate_loose_qty) )/s.conversion) issue_pack_qty
+                ,mod(( sum(s.sale_calculate_loose_qty) + sum(s.purchase_return_calculate_loose_qty) ),s.conversion) issue_loose_qty
+
+                -- receipt
+                ,( sum(s.purchase_calculate_loose_qty) + sum(s.sale_return_calculate_loose_qty) ) receipt_calculate_loose_qty
+                ,FLOOR(( sum(s.purchase_calculate_loose_qty) + sum(s.sale_return_calculate_loose_qty) )/s.conversion) receipt_pack_qty
+                ,mod(( sum(s.purchase_calculate_loose_qty) + sum(s.sale_return_calculate_loose_qty) ),s.conversion) receipt_loose_qty
+
+                -- closing
+                ,( sum(s.calculate_loose_qty)+ sum(s.purchase_calculate_loose_qty) + sum(s.sale_return_calculate_loose_qty) - sum(s.sale_calculate_loose_qty) - sum(s.purchase_return_calculate_loose_qty) ) closing_calculate_loose_qty
+                ,FLOOR( ( sum(s.calculate_loose_qty)+ sum(s.purchase_calculate_loose_qty) + sum(s.sale_return_calculate_loose_qty) - sum(s.sale_calculate_loose_qty) - sum(s.purchase_return_calculate_loose_qty) ) /s.conversion) closing_pack_qty
+                ,mod( ( sum(s.calculate_loose_qty)+ sum(s.purchase_calculate_loose_qty) + sum(s.sale_return_calculate_loose_qty) - sum(s.sale_calculate_loose_qty) - sum(s.purchase_return_calculate_loose_qty) ),s.conversion) closing_loose_qty
+
+         from (
+
+
+               select x.item_id
+                      , x.batch_no
+                      , x.expiry_date
+                      , convert(DATE_FORMAT(x.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+                      , x.pack_unit_id
+                      , x.conversion
+                      , max(x.mrp) mrp
+                      , FLOOR(sum(x.calculate_loose_qty)/x.conversion) pack_qty
+                      , mod(sum(x.calculate_loose_qty),x.conversion) loose_qty
+                      , sum(x.calculate_loose_qty) calculate_loose_qty
+                      , 0 sale_pack_qty
+                      , 0 sale_loose_qty
+                      , 0 sale_calculate_loose_qty
+                      , 0 sale_return_pack_qty
+                      , 0 sale_return_loose_qty
+                      , 0 sale_return_calculate_loose_qty
+                      , 0 purchase_pack_qty
+                      , 0 purchase_loose_qty
+                      , 0 purchase_calculate_loose_qty
+                      , 0 purchase_return_pack_qty
+                      , 0 purchase_return_loose_qty
+                      , 0 purchase_return_calculate_loose_qty
+
+               from
+               (
+
+                      -- from Stock
+                      SELECT  a.item_id, a.batch_no, a.expiry_date, a.pack_unit_id, a.pack_qty, a.loose_qty,a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+ifnull(a.loose_qty,0) ) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM inv_t_op_stock a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.as_on_date <=ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+                      union all
+
+
+                      -- from sale
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, ifnull(a.pack_qty,0)*(-1),ifnull(a.loose_qty,0)*(-1), a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+ifnull(a.loose_qty,0) )*(-1) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM sal_t_sale_details a
+                      inner join sal_t_sale s on a.sale_id=s.id
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and s.hold_flag=1
+                      and a.inv_date<ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+
+
+
+                      union all
+
+                      -- from sale return
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, a.pack_qty,a.loose_qty, a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+ifnull(a.loose_qty,0) ) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM sal_t_sale_return_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date<ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+
+
+
+                      union all
+
+                      -- from purchase
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, a.pack_qty,a.loose_qty, a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+( FLOOR(ifnull(a.free_qty,0))*a.conversion)+ifnull(a.loose_qty,0) ) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM pur_t_purchase_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date<ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+
+
+                      union all
+                      -- from purchase return
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, ifnull(a.pack_qty,0)*(-1),ifnull(a.loose_qty,0)*(-1), a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+( FLOOR(ifnull(a.free_qty,0))*a.conversion)+ifnull(a.loose_qty,0) )*(-1) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM pur_t_purchase_return_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date<ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+
+                      union all
+
+                      -- from expiry issue
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, ifnull(a.pack_qty,0)*(-1),ifnull(a.loose_qty,0)*(-1), a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+( FLOOR(ifnull(a.free_qty,0))*a.conversion)+ifnull(a.loose_qty,0) )*(-1) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM exp_t_expiry_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date<ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+
+
+               )x
+               group by x.item_id, x.batch_no, x.expiry_date, x.pack_unit_id,x.conversion -- x.mrp
+               having sum(x.calculate_loose_qty) >0
+
+
+               union all
+
+               --  from sale
+               select x.item_id
+                      , x.batch_no
+                      , x.expiry_date
+                      , convert(DATE_FORMAT(x.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+                      , x.pack_unit_id
+                      , x.conversion
+                      , max(x.mrp) mrp
+                      ,0 pack_qty
+                      ,0 loose_qty
+                      ,0 calculate_loose_qty
+                      , FLOOR(sum(x.calculate_loose_qty)/x.conversion) sale_pack_qty
+                      , mod(sum(x.calculate_loose_qty),x.conversion) sale_loose_qty
+                      , sum(x.calculate_loose_qty) sale_calculate_loose_qty
+                      , 0 sale_return_pack_qty
+                      , 0 sale_return_loose_qty
+                      , 0 sale_return_calculate_loose_qty
+                      , 0 purchase_pack_qty
+                      , 0 purchase_loose_qty
+                      , 0 purchase_calculate_loose_qty
+                      , 0 purchase_return_pack_qty
+                      , 0 purchase_return_loose_qty
+                      , 0 purchase_return_calculate_loose_qty
+
+
+               from
+               (
+                      -- from sale
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, ifnull(a.pack_qty,0)*(1),ifnull(a.loose_qty,0)*(1), a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+ifnull(a.loose_qty,0) )*(1) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM sal_t_sale_details a
+                      inner join sal_t_sale s on a.sale_id=s.id
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and s.hold_flag=1
+                      and a.inv_date=ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+               )x
+               group by x.item_id, x.batch_no, x.expiry_date, x.pack_unit_id,x.conversion -- ,x.mrp
+
+
+               union all
+
+               -- from sale return
+               select x.item_id
+                      , x.batch_no
+                      , x.expiry_date
+                      , convert(DATE_FORMAT(x.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+                      , x.pack_unit_id
+                      , x.conversion
+                      , max(x.mrp) mrp
+                      ,0 pack_qty
+                      ,0 loose_qty
+                      ,0 calculate_loose_qty
+                      ,0 sale_pack_qty
+                      ,0 sale_loose_qty
+                      ,0 sale_calculate_loose_qty
+                      , FLOOR(sum(x.calculate_loose_qty)/x.conversion) sale_return_pack_qty
+                      , mod(sum(x.calculate_loose_qty),x.conversion) sale_return_loose_qty
+                      , sum(x.calculate_loose_qty) sale_return_calculate_loose_qty
+                      , 0 purchase_pack_qty
+                      , 0 purchase_loose_qty
+                      , 0 purchase_calculate_loose_qty
+                      , 0 purchase_return_pack_qty
+                      , 0 purchase_return_loose_qty
+                      , 0 purchase_return_calculate_loose_qty
+
+               from
+               (
+                      -- from sale return
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, a.pack_qty,a.loose_qty, a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+ifnull(a.loose_qty,0) ) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM sal_t_sale_return_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date=ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+               )x
+               group by x.item_id, x.batch_no, x.expiry_date, x.pack_unit_id,x.conversion -- ,x.mrp
+
+
+               union all
+
+               -- from purchase
+               select x.item_id
+                      , x.batch_no
+                      , x.expiry_date
+                      , convert(DATE_FORMAT(x.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+                      , x.pack_unit_id
+                      , x.conversion
+                      , max(x.mrp) mrp
+                      ,0 pack_qty
+                      ,0 loose_qty
+                      ,0 calculate_loose_qty
+                      ,0 sale_pack_qty
+                      ,0 sale_loose_qty
+                      ,0 sale_calculate_loose_qty
+                      , 0 sale_return_pack_qty
+                      , 0 sale_return_loose_qty
+                      , 0 sale_return_calculate_loose_qty
+                      , FLOOR(sum(x.calculate_loose_qty)/x.conversion) purchase_pack_qty
+                      , mod(sum(x.calculate_loose_qty),x.conversion) purchase_loose_qty
+                      , sum(x.calculate_loose_qty) purchase_calculate_loose_qty
+                      , 0 purchase_return_pack_qty
+                      , 0 purchase_return_loose_qty
+                      , 0 purchase_return_calculate_loose_qty
+
+               from
+               (
+                      -- from purchase
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, a.pack_qty,a.loose_qty, a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+( FLOOR(ifnull(a.free_qty,0))*a.conversion)+ifnull(a.loose_qty,0) ) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM pur_t_purchase_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date=ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+               )x
+               group by x.item_id, x.batch_no, x.expiry_date, x.pack_unit_id,x.conversion -- ,x.mrp
+
+
+               union all
+
+               -- from purchase return
+               select x.item_id
+                      , x.batch_no
+                      , x.expiry_date
+                      , convert(DATE_FORMAT(x.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+                      , x.pack_unit_id
+                      , x.conversion
+                      , max(x.mrp) mrp
+                      ,0 pack_qty
+                      ,0 loose_qty
+                      ,0 calculate_loose_qty
+                      ,0 sale_pack_qty
+                      ,0 sale_loose_qty
+                      ,0 sale_calculate_loose_qty
+                      , 0 sale_return_pack_qty
+                      , 0 sale_return_loose_qty
+                      , 0 sale_return_calculate_loose_qty
+                      , 0 purchase_pack_qty
+                      , 0 purchase_loose_qty
+                      , 0 purchase_calculate_loose_qty
+                      , FLOOR(sum(x.calculate_loose_qty)/x.conversion) purchase_return_pack_qty
+                      , mod(sum(x.calculate_loose_qty),x.conversion) purchase_return_loose_qty
+                      , sum(x.calculate_loose_qty) purchase_return_calculate_loose_qty
+
+               from
+               (
+                      -- from purchase return
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, ifnull(a.pack_qty,0)*(1),ifnull(a.loose_qty,0)*(1), a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+( FLOOR(ifnull(a.free_qty,0))*a.conversion)+ifnull(a.loose_qty,0) )*(1) calculate_loose_qty
+                             ,a.rate mrp
+                      FROM pur_t_purchase_return_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date=ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+               )x
+               group by x.item_id, x.batch_no, x.expiry_date, x.pack_unit_id,x.conversion  -- ,x.mrp
+
+
+               union all
+
+               -- from expiry
+               select x.item_id
+                      , x.batch_no
+                      , x.expiry_date
+                      , convert(DATE_FORMAT(x.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+                      , x.pack_unit_id
+                      , x.conversion
+                      , max(x.mrp) mrp
+                      ,0 pack_qty
+                      ,0 loose_qty
+                      ,0 calculate_loose_qty
+                      ,0 sale_pack_qty
+                      ,0 sale_loose_qty
+                      ,0 sale_calculate_loose_qty
+                      , 0 sale_return_pack_qty
+                      , 0 sale_return_loose_qty
+                      , 0 sale_return_calculate_loose_qty
+                      , 0 purchase_pack_qty
+                      , 0 purchase_loose_qty
+                      , 0 purchase_calculate_loose_qty
+                      , FLOOR(sum(x.calculate_loose_qty)/x.conversion) purchase_return_pack_qty
+                      , mod(sum(x.calculate_loose_qty),x.conversion) purchase_return_loose_qty
+                      , sum(x.calculate_loose_qty) purchase_return_calculate_loose_qty
+
+               from
+               (
+                      -- from expiry
+
+
+                      SELECT a.item_id,a.batch_no, a.expiry_date, a.pack_unit_id, ifnull(a.pack_qty,0)*(-1),ifnull(a.loose_qty,0)*(-1), a.conversion
+                             ,( ( ifnull(a.pack_qty,0)*a.conversion)+( FLOOR(ifnull(a.free_qty,0))*a.conversion)+ifnull(a.loose_qty,0) )*(-1) calculate_loose_qty
+                             ,a.rate mrp
+
+                      FROM exp_t_expiry_details a
+                      where a.company_id=$P{W_companyID}
+                      and a.store_id=$P{W_storeID}
+                      and a.finyr_id=$P{W_finyrID}
+                      and a.inv_date=ifnull($P{W_asOnDate},current_date())
+                      and (
+                           (a.item_id=$P{W_itemID} and ifnull($P{W_itemID},0)<>0)
+                           or
+                           (ifnull($P{W_itemID},0)=0)
+                          )
+
+
+               )x
+               group by x.item_id, x.batch_no, x.expiry_date, x.pack_unit_id,x.conversion  -- ,x.mrp
+
+         )s
+
+
+                group by
+                 s.item_id
+                ,s.batch_no
+                ,s.expiry_date
+                ,s.expiry_date_format
+                ,s.pack_unit_id
+                ,s.conversion
+                
+
+      )a
+
+
+    )x
+    inner join  in_m_item y on x.item_id=y.id
+    inner join in_m_group g on y.group_id=g.id
+    inner join gen_m_store s on s.id=$P{W_storeID}
+    left join in_m_currency c on s.currency_id=c.id
+    where s.id=$P{W_storeID}
+   order by g.name,y.name ,x.expiry_date
+
+
+   ;]]>
+	</queryString>
+	<field name="item_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String"/>
+	<field name="group_name" class="java.lang.String"/>
+	<field name="batch_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiry_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiry_date_format" class="java.lang.String"/>
+	<field name="conversion" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="mrp" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pack_qty" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="loose_qty" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="calculate_loose_qty" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stock_amount" class="java.math.BigDecimal"/>
+	<field name="stock_qty" class="java.lang.String"/>
+	<field name="sale_amount" class="java.math.BigDecimal"/>
+	<field name="sale_qty" class="java.lang.String"/>
+	<field name="purchase_return_amount" class="java.math.BigDecimal"/>
+	<field name="purchase_return_qty" class="java.lang.String"/>
+	<field name="purchase_amount" class="java.math.BigDecimal"/>
+	<field name="purchase_qty" class="java.lang.String"/>
+	<field name="sale_return_amount" class="java.math.BigDecimal"/>
+	<field name="sale_return_qty" class="java.lang.String"/>
+	<field name="issue_amount" class="java.math.BigDecimal"/>
+	<field name="issue_pack_qty" class="java.math.BigDecimal"/>
+	<field name="issue_loose_qty" class="java.math.BigDecimal"/>
+	<field name="issue_calculate_loose_qty" class="java.math.BigDecimal"/>
+	<field name="issue_qty" class="java.lang.String"/>
+	<field name="receipt_amount" class="java.math.BigDecimal"/>
+	<field name="receipt_pack_qty" class="java.math.BigDecimal"/>
+	<field name="receipt_loose_qty" class="java.math.BigDecimal"/>
+	<field name="receipt_calculate_loose_qty" class="java.math.BigDecimal"/>
+	<field name="receipt_qty" class="java.lang.String"/>
+	<field name="closing_amount" class="java.math.BigDecimal"/>
+	<field name="closing_pack_qty" class="java.math.BigDecimal"/>
+	<field name="closing_loose_qty" class="java.math.BigDecimal"/>
+	<field name="closing_calculate_loose_qty" class="java.math.BigDecimal"/>
+	<field name="closing_qty" class="java.lang.String"/>
+	<field name="store_name" class="java.lang.String"/>
+	<field name="address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="currency_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="op_group" class="java.math.BigDecimal" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{stock_amount}]]></variableExpression>
+	</variable>
+	<variable name="issue_group" class="java.math.BigDecimal" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_amount}]]></variableExpression>
+	</variable>
+	<variable name="receive_group" class="java.math.BigDecimal" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_amount}]]></variableExpression>
+	</variable>
+	<variable name="cl_group" class="java.math.BigDecimal" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_amount}]]></variableExpression>
+	</variable>
+	<variable name="op_total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{stock_amount}]]></variableExpression>
+	</variable>
+	<variable name="issue_total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_amount}]]></variableExpression>
+	</variable>
+	<variable name="receive_total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_amount}]]></variableExpression>
+	</variable>
+	<variable name="cl_total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_amount}]]></variableExpression>
+	</variable>
+	<variable name="issue_pack_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="issue_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="issue_calculate_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="receipt_pack_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="receipt_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="receipt_calculate_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="closing_pack_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="closing_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="closing_calculate_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="op_pack_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="op_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="op_calculate_loose_qty_group" class="java.lang.Integer" resetType="Group" resetGroup="group_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="issue_pack_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="issue_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="issue_calculate_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="receipt_pack_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="receipt_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="receipt_calculate_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{receipt_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="closing_pack_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="closing_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="closing_calculate_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="op_pack_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{pack_qty}]]></variableExpression>
+	</variable>
+	<variable name="op_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{loose_qty}]]></variableExpression>
+	</variable>
+	<variable name="op_calculate_loose_qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{calculate_loose_qty}]]></variableExpression>
+	</variable>
+	<group name="group_name">
+		<groupExpression><![CDATA[$F{group_name}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="11">
+				<textField pattern="###0.00">
+					<reportElement x="242" y="0" width="57" height="11" uuid="e08669b6-223e-4fb1-aaa3-de7b67b51324"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{issue_group}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00">
+					<reportElement x="366" y="0" width="66" height="11" uuid="acfe7a99-c92c-46ea-ba04-1036d7af4ca7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{receive_group}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00">
+					<reportElement x="489" y="0" width="64" height="11" uuid="94643c82-29a2-4015-bffb-dfcc38399e6d"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{cl_group}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00">
+					<reportElement x="124" y="0" width="53" height="11" uuid="4840bd7c-2924-47bc-9aad-5e34bdd83502"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{op_group}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="179" y="0" width="58" height="11" uuid="0cc4929b-14ad-4b14-9313-8bf9459becee"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{issue_pack_qty_group}.toString() + "/" + $V{issue_loose_qty_group}.toString()+ "[" + $V{issue_calculate_loose_qty_group}.toString()+ "]"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="306" y="0" width="58" height="11" uuid="2d73942a-c77b-4be2-aa61-79b8cebe67c7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{receipt_pack_qty_group}.toString() + "/" + $V{receipt_loose_qty_group}.toString()+ "[" + $V{receipt_calculate_loose_qty_group}.toString()+ "]"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="432" y="0" width="57" height="11" uuid="8e1cd868-81ab-4242-aef1-1eb6fc773c9f"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{closing_pack_qty_group}.toString() + "/" + $V{closing_loose_qty_group}.toString()+ "[" + $V{closing_calculate_loose_qty_group}.toString()+ "]"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="69" y="0" width="53" height="11" uuid="049770d2-c79b-48ab-8147-6680d315aca8"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{op_pack_qty_group}.toString() + "/" + $V{op_loose_qty_group}.toString()+ "[" + $V{op_calculate_loose_qty_group}.toString()+ "]"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="4" y="0" width="66" height="11" uuid="2e8728fe-efad-45a8-96dc-65ead1f10881"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{group_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="item_name">
+		<groupExpression><![CDATA[$F{item_id}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="441" y="5" width="40" height="14" uuid="94f11e1b-8840-4db3-a14d-6997d9764ed4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yy">
+				<reportElement x="482" y="5" width="62" height="14" uuid="2f1cc861-f7f2-4ad2-8ddc-c5b192abeb07"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="441" y="22" width="40" height="14" uuid="58ec7eba-50ec-40a1-bd11-c71d7ab0704e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Time:]]></text>
+			</staticText>
+			<textField pattern="HH.mm">
+				<reportElement x="482" y="22" width="62" height="14" uuid="4a8ca7d6-a84d-4c7e-a9c7-133caefbaac0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_CH" x="138" y="2" width="212" height="17" uuid="e00431df-ff77-408a-8d4d-233c39560030"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_CH" x="138" y="18" width="212" height="16" uuid="0390ff5c-32e6-49de-8701-78e1bcb5855a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_CH" x="182" y="34" width="36" height="13" uuid="f744341d-e2c6-4683-a561-0960f77cde85"/>
+				<textElement>
+					<font fontName="SansSerif" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Phone : ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_CH" x="218" y="34" width="100" height="13" uuid="1e728073-0f20-4f98-9b15-3c77394f0eea"/>
+				<textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_CH" x="182" y="47" width="36" height="13" uuid="2b564050-62cd-4fd7-bebb-b7fe82a00477"/>
+				<textElement>
+					<font fontName="SansSerif" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Email : ]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_CH" x="218" y="47" width="100" height="13" uuid="b5903f38-80f9-4b84-9e7e-df7f1aa14558"/>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="42">
+			<line>
+				<reportElement x="0" y="27" width="555" height="1" uuid="fef4d632-11df-43c2-b763-25dc94fd4446"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="14" forecolor="#000000" backcolor="#CCCCCC" uuid="3bab1b33-3eaa-40e2-b7d7-21b6d169e70c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="307" y="2" width="58" height="12" uuid="b24a64f0-450a-427b-ac60-042fba5f6674"/>
+				<textElement textAlignment="Left">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{W_asOnDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="227" y="14" width="42" height="11" uuid="ff1b3db6-765a-4068-8548-6e4123ef499f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Currency :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="69" y="28" width="53" height="11" uuid="64369e8f-42a5-40ef-bd58-bff3a3c823e8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[OP Qty]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="268" y="15" width="100" height="11" uuid="4cd14cab-2e95-43f7-b63b-653b82b76fe8"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{currency_code}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="40" width="555" height="1" uuid="8ecfa023-b411-4c8c-8300-86ef79ad1ba0"/>
+			</line>
+			<textField>
+				<reportElement x="421" y="14" width="90" height="12" uuid="edd4af23-addb-4d4f-b86e-048168e1e33b"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="513" y="14" width="39" height="11" uuid="58f15d1f-608c-452f-8f4b-38191e0a1dd3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="28" width="56" height="11" uuid="77bf1038-2056-421c-b374-d40cc5c508e1"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Group Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="124" y="28" width="52" height="11" uuid="01df8a23-02df-415e-ab55-9cabecf92cc5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[OP Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="138" y="2" width="163" height="12" uuid="f29630e5-38a0-45a0-9e0a-621b339c4073"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Current Stock Value Group Wise Report On]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="306" y="28" width="56" height="11" uuid="d6aaf1ec-7ba4-494a-a818-4dc7a8787057"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Receive Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="501" y="28" width="51" height="11" uuid="024e28a4-cd8c-494b-9f9e-07d5849cb944"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CL Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="432" y="28" width="57" height="11" uuid="5f76d2c2-0042-4265-abf4-84fc12aa5b57"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CL Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="376" y="28" width="56" height="11" uuid="87343805-99bf-4a01-b40c-f86b2243d52f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Receive Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="242" y="28" width="57" height="11" uuid="19c34750-cd41-4cb6-9de5-6d6d0cc02755"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Issue Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="179" y="28" width="59" height="11" uuid="33c5b0fb-7af3-4a01-b3d1-bf2277b4bd63"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Issue Qty]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<summary>
+		<band height="14" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="1" width="555" height="12" forecolor="#000000" backcolor="#CCCCCC" uuid="7ad9ac8a-89c8-4701-bd00-ac275f85bd62"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="###0.00">
+				<reportElement x="124" y="1" width="53" height="11" uuid="ea52934f-90ea-4322-b930-5913fd0220b7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{op_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="489" y="1" width="64" height="11" uuid="56ba1206-feec-4bb5-9171-afcc1c00bdf7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{cl_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="366" y="1" width="66" height="11" uuid="07fb2f3c-ea3d-49bc-850d-d68c6c4ede67"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{receive_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="242" y="1" width="57" height="11" uuid="d1831e47-cfe0-428f-9702-084018384cc5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{issue_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="29" y="1" width="93" height="11" uuid="d076e5c8-cc04-46e4-a55f-fd32aef7db35"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{op_pack_qty_total}.toString() + "/" + $V{op_loose_qty_total}.toString()+ "[" + $V{op_calculate_loose_qty_total}.toString()+ "]"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="181" y="1" width="57" height="11" uuid="40c65c87-b232-414a-9073-14c93f71108b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{issue_pack_qty_total}.toString() + "/" + $V{issue_loose_qty_total}.toString()+ "[" + $V{issue_calculate_loose_qty_total}.toString()+ "]"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="306" y="1" width="58" height="11" uuid="7e461b77-6a02-4295-b28a-d76920cec76e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{receipt_pack_qty_total}.toString() + "/" + $V{receipt_loose_qty_total}.toString()+ "[" + $V{receipt_calculate_loose_qty_total}.toString()+ "]"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="432" y="1" width="57" height="11" uuid="57f6d6a2-6879-4362-8064-b9f715e9585b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{closing_pack_qty_total}.toString() + "/" + $V{closing_loose_qty_total}.toString()+ "[" + $V{closing_calculate_loose_qty_total}.toString()+ "]"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

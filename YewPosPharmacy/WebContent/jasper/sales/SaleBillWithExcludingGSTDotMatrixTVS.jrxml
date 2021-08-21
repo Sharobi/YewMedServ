@@ -1,0 +1,1183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SaleBillWithExcludingGSTDotMatrixTVS" pageWidth="576" pageHeight="432" whenNoDataType="AllSectionsNoDetail" columnWidth="574" leftMargin="1" rightMargin="1" topMargin="12" bottomMargin="12" uuid="23e68270-b132-4c52-8768-024db2e7e617">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dataset1" uuid="839341bd-5a43-4241-bd36-1a2fd7dcc61c">
+		<parameter name="W_SaleID" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[select a.tax_id
+        ,a.tax_name
+        ,a.tax_percentage
+        ,sum(a.taxable_amount) taxable_amount
+        ,sum(a.tax_amount) tax_amount
+        ,sum(a.CGST) CGST
+        ,a.CGST_percentage
+        ,sum(a.SGST)  SGST
+        ,a.SGST_percentage
+        ,sum(a.IGST) IGST
+        ,a.IGST_percentage
+  from
+  (
+        select x.item_id
+                  ,x.batch_no
+                  ,x.expiry_date
+                  ,x.expiry_date_format
+
+                  ,x.disc_per
+                  ,x.disc
+                  ,x.tot_amount
+
+
+
+                  ,x.tax_id#
+                  ,x.tax_name#
+                  ,x.tax_percentage#
+                  ,x.tax_amount
+                  ,x.is_group_tax
+                  ,x.tax_mode
+
+                  ,x.purchase_cost_per_unit
+
+                  ,x.total_amount
+                  ,x.taxable_amount
+
+                  ,sum(x.CGST) CGST
+                  ,sum(x.CGST_percentage) CGST_percentage
+                  ,sum(x.SGST) SGST
+                  ,sum(x.SGST_percentage) SGST_percentage
+                  ,sum(x.IGST) IGST
+                  ,sum(x.IGST_percentage) IGST_percentage
+
+
+        from
+        (
+            select sd.item_id
+                  ,sd.batch_no
+                  ,sd.expiry_date
+                  ,convert(DATE_FORMAT(sd.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+
+
+                  ,sd.disc_per
+                  ,sd.disc
+                  ,sd.tot_amount
+
+
+                  ,sd.tax_id
+                  ,t.name tax_name
+                  ,sd.tax_percentage
+                  ,sd.tax_amount
+                  ,sd.is_group_tax
+                  ,sd.tax_mode
+
+                  ,sd.purchase_cost_per_unit
+
+
+                  ,(sd.amount-sd.disc) taxable_amount
+                  ,(sd.amount) total_amount
+
+                  ,case
+                         when tm.tax_mode='CGST' then tm.amount
+                         else 0 end
+                  CGST
+                  ,case
+                         when tm.tax_mode='CGST' then tm.percentage
+                         else 0 end
+                  CGST_percentage
+                  ,case
+                         when tm.tax_mode='SGST' then tm.amount
+                         else 0 end
+                  SGST
+                  ,case
+                         when tm.tax_mode='SGST' then tm.percentage
+                         else 0 end
+                  SGST_percentage
+                  ,case
+                         when tm.tax_mode='IGST' then tm.amount
+                         else 0 end
+                  IGST
+                  ,case
+                         when tm.tax_mode='IGST' then tm.percentage
+                         else 0 end
+                  IGST_percentage
+
+
+
+            from sal_t_sale s
+            inner join gen_m_store st on s.store_id=st.id
+            inner join sal_t_sale_details sd on s.id=sd.sale_id
+            left outer join in_m_tax t on sd.tax_id=t.id
+            left outer join sal_t_sale_details_tax_mapping tm on sd.id=tm.sale_details_id
+
+
+            where  sd.sale_id=$P{W_SaleID}
+
+        )x
+        group by   x.item_id
+                  ,x.batch_no
+                  ,x.expiry_date
+                  ,x.expiry_date_format
+
+                  ,x.disc_per
+                  ,x.disc
+                  ,x.tot_amount
+
+
+
+                  ,x.tax_id
+                  ,x.tax_name
+                  ,x.tax_percentage
+                  ,x.tax_amount
+                  ,x.is_group_tax
+                  ,x.tax_mode
+
+                  ,x.purchase_cost_per_unit
+
+                  ,x.total_amount
+                  ,x.taxable_amount
+
+   )a    group by
+         a.tax_id
+        ,a.tax_name
+        ,a.tax_percentage
+        ,a.CGST_percentage
+        ,a.SGST_percentage
+        ,a.IGST_percentage
+ ;]]>
+		</queryString>
+		<field name="tax_id" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="tax_name" class="java.lang.String"/>
+		<field name="tax_percentage" class="java.math.BigDecimal">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="taxable_amount" class="java.math.BigDecimal"/>
+		<field name="tax_amount" class="java.math.BigDecimal">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="CGST" class="java.math.BigDecimal"/>
+		<field name="CGST_percentage" class="java.math.BigDecimal"/>
+		<field name="SGST" class="java.math.BigDecimal"/>
+		<field name="SGST_percentage" class="java.math.BigDecimal"/>
+		<field name="IGST" class="java.math.BigDecimal"/>
+		<field name="IGST_percentage" class="java.math.BigDecimal"/>
+	</subDataset>
+	<parameter name="W_CompanyID" class="java.lang.Integer"/>
+	<parameter name="W_StoreID" class="java.lang.Integer"/>
+	<parameter name="W_SaleID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_IsReprint" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_ReprintCount" class="java.lang.Integer"/>
+	<parameter name="W_Note1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_Note2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+             a.item_id
+            ,a.item_name
+            ,a.batch_no
+            ,a.expiry_date
+            ,a.expiry_date_format
+            ,a.pack_unit_id
+            ,a.pack_unit_name
+            ,a.pack_qty
+            ,a.conversion
+            ,a.loose_unit_id
+            ,a.loose_qty
+            ,a.mrp
+            ,a.rate
+            ,a.mrp_per_unit
+            ,a.rate_per_unit
+            ,a.disc_per
+            ,a.disc
+            ,a.tot_amount
+            ,a.calculate_loose_qty
+
+
+
+            ,a.tax_id
+            ,a.tax_name
+            ,a.tax_percentage
+            ,a.tax_amount
+            ,a.is_group_tax
+            ,a.tax_mode
+
+            ,a.SKU
+            ,a.HSN_code
+            ,a.purchase_cost_per_unit
+
+            ,a.total_amount
+            ,a.taxable_amount
+
+            ,a.CGST
+            ,a.CGST_percentage
+            ,a.SGST
+            ,a.SGST_percentage
+            ,a.IGST
+            ,a.IGST_percentage
+
+
+            ,a.CGST_print
+            ,a.SGST_print
+            ,a.IGST_print
+
+            ,a.net_content
+            ,a.group_id
+            ,a.schedule_id
+            ,a.manufacturer_id
+            ,a.manufacturer_name
+            ,a.manufacturer_code
+
+            ,a.customer_name
+            ,a.customer_phone
+            ,a.customer_address
+            ,a.doctor_name
+
+
+            ,a.inv_no
+            ,a.inv_date
+            ,a.inv_time
+
+            ,a.store_name
+            ,a.store_details
+            ,a.drug_license_no
+            ,a.GSTIN_No
+            ,a.store_phone
+
+            ,a.special_disc_amount
+            ,a.gross_amount
+            ,a.disc_amount
+            ,a.total_taxable_amount
+            ,a.roundoff
+            ,a.net_amount
+            ,a.net_amount_words
+
+            ,concat('Spl.Disc:         ',substring(concat('        ',cast(a.special_disc_amount as char(8)) ),-10)  ) special_disc_amount_print
+            ,concat('R.Off:            ',substring(concat('        ',cast(a.roundoff as char(8)) ),-10)  ) roundoff_print
+            ,concat('Gross Total:      ',substring(concat('        ',cast(a.gross_amount as char(8)) ),-10)  ) gross_amount_print
+            ,concat('Disc:             ',substring(concat('        ',cast(a.disc_amount as char(8)) ),-10)  ) disc_amount_print
+
+            ,concat('Sale Return Amt:  ',substring(concat('        ',cast(a.retrun_amount as char(8)) ),-10)  ) retrun_amount
+            ,concat('Bill Amount:      ',substring(concat('        ',cast(a.bill_amount as char(8)) ),-10)  ) bill_amount
+
+
+            ,a.cash_memo_header
+            ,a.amount_lable
+            ,a.reprint_leble
+            ,a.is_exclusive
+
+            ,a.Tax_lable
+            ,a.Taxable_lable
+            ,a.CGST_lable
+            ,a.CGST_AMT_lable
+            ,a.SGST_lable
+            ,a.SGST_AMT_lable
+            ,a.schedule_name
+from
+(
+select x.item_id
+            ,x.item_name
+            ,x.batch_no
+            ,x.expiry_date
+            ,x.expiry_date_format
+            ,x.pack_unit_id
+            ,x.pack_unit_name
+            ,x.pack_qty
+            ,x.conversion
+            ,x.loose_unit_id
+            ,x.loose_qty
+            ,x.mrp
+            ,x.rate
+            ,x.mrp_per_unit
+            ,x.rate_per_unit
+            ,x.disc_per
+            ,x.disc
+            ,x.tot_amount
+            ,x.calculate_loose_qty
+
+
+
+            ,x.tax_id
+            ,x.tax_name
+            ,x.tax_percentage
+            ,x.tax_amount
+            ,x.is_group_tax
+            ,x.tax_mode
+
+            ,x.SKU
+            ,x.HSN_code
+            ,x.purchase_cost_per_unit
+
+            ,x.total_amount
+            ,x.taxable_amount
+
+            ,sum(x.CGST) CGST
+            ,sum(x.CGST_percentage) CGST_percentage
+            ,sum(x.SGST) SGST
+            ,sum(x.SGST_percentage) SGST_percentage
+            ,sum(x.IGST) IGST
+            ,sum(x.IGST_percentage) IGST_percentage
+
+
+,concat(cast(sum(x.CGST) as char(8)),'(',cast(cast(sum(x.CGST_percentage) as decimal(18,1)) as char(8)),'%)') CGST_print
+            ,concat(cast(sum(x.SGST) as char(8)),'(',cast(cast(sum(x.SGST_percentage) as decimal(18,1)) as char(8)),'%)') SGST_print
+            ,concat(cast(sum(x.IGST) as char(8)),'(',cast(cast(sum(x.IGST_percentage) as decimal(18,1)) as char(8)),'%)') IGST_print
+
+            ,x.net_content
+            ,x.group_id
+            ,x.schedule_id
+            ,x.manufacturer_id
+            ,x.manufacturer_name
+            ,x.manufacturer_code
+
+            ,concat('Patient Name: ',ifnull(x.customer_name,'') )  customer_name
+            ,concat('Patient Ph No: ',ifnull(x.customer_phone,'') )  customer_phone
+            ,concat('Patient Address: ',ifnull(x.customer_address,'') )  customer_address
+            ,concat('Doctor''s Name: ',ifnull(x.doctor_name,'') )  doctor_name
+
+
+            ,concat('Cash Memo No: ',ifnull(x.inv_no,'') )  inv_no
+            ,x.inv_date
+            ,x.inv_time
+
+            ,x.store_name
+            ,x.store_details
+            ,x.drug_license_no
+            ,concat('GSTIN: ',ifnull(x.GSTIN_No,'') )  GSTIN_No
+            ,x.store_phone
+
+            ,x.total_taxable_amount
+            ,x.net_amount
+            ,concat('Total Invoice Value (In Words): ',(select AmountToWords(x.net_amount) ) ) net_amount_words
+
+            ,x.special_disc_amount
+            ,x.roundoff
+            ,x.gross_amount
+            ,x.disc_amount
+
+            ,ifnull((select sum(adj_amount) from sal_t_sale_return_mapping where sale_id= $P{W_SaleID} ),0) retrun_amount
+            ,( x.net_amount-ifnull((select sum(adj_amount) from sal_t_sale_return_mapping where sale_id= $P{W_SaleID} ),0) ) bill_amount
+
+            ,x.cash_memo_header
+            ,x.amount_lable
+            ,x.reprint_leble
+            ,x.is_exclusive
+
+            ,x.Tax_lable
+            ,x.Taxable_lable
+            ,x.CGST_lable
+            ,x.CGST_AMT_lable
+            ,x.SGST_lable
+            ,x.SGST_AMT_lable
+            ,x.schedule_name
+
+
+  from
+  (
+      select sd.item_id
+            ,i.name item_name
+            ,sd.batch_no
+            ,sd.expiry_date
+            ,convert(DATE_FORMAT(sd.expiry_date, '%m/%y'),CHAR CHARACTER SET utf8) expiry_date_format
+
+            ,sd.pack_unit_id
+            ,u.code pack_unit_name
+            ,sd.pack_qty
+            ,sd.conversion
+            ,i.loose_unit_id
+            ,sd.loose_qty
+            ,sd.mrp
+            ,sd.rate
+            ,sd.mrp_per_unit
+            ,sd.rate_per_unit
+            ,sd.disc_per
+            ,sd.disc
+            ,sd.tot_amount
+            ,((sd.pack_qty*sd.conversion)+sd.loose_qty) calculate_loose_qty
+
+
+            ,sd.tax_id
+            ,t.name tax_name
+            ,sd.tax_percentage
+            ,sd.tax_amount
+            ,sd.is_group_tax
+            ,sd.tax_mode
+
+            ,i.SKU
+            ,i.HSN_code
+            ,sd.purchase_cost_per_unit
+
+
+            ,(sd.amount-ifnull(sd.disc,0)) taxable_amount
+            ,(sd.amount) total_amount
+            --
+            ,case
+                   when tm.tax_mode='CGST' then tm.amount
+                   else 0 end
+            CGST
+            ,case
+                   when tm.tax_mode='CGST' then tm.percentage
+                   else 0 end
+            CGST_percentage
+            ,case
+                   when tm.tax_mode='SGST' then tm.amount
+                   else 0 end
+            SGST
+            ,case
+                   when tm.tax_mode='SGST' then tm.percentage
+                   else 0 end
+            SGST_percentage
+            ,case
+                   when tm.tax_mode='IGST' then tm.amount
+                   else 0 end
+            IGST
+            ,case
+                   when tm.tax_mode='IGST' then tm.percentage
+                   else 0 end
+            IGST_percentage
+
+            ,i.net_content
+            ,i.group_id
+            ,i.schedule_id
+            ,i.manufacturer_id
+            ,m.name manufacturer_name
+            ,substring(m.code,-3) manufacturer_code
+
+            ,ifnull(s.customer_name,c.name) customer_name
+            ,ifnull(s.customer_phone,c.phone_no) customer_phone
+            ,ifnull(s.customer_address,c.address) customer_address
+            ,ifnull(s.doctor_name,d.name) doctor_name
+
+            ,s.inv_no
+            ,s.inv_date
+            ,s.inv_time
+
+            ,st.name store_name
+            ,concat( st.address,if(st.postcode,concat(', Pin:',st.postcode),'') ) store_details
+            ,concat( if(st.dl_licence_no,'',concat('D.L No.:',st.dl_licence_no))  , if(st.state_licence_no,'',concat(', State Membership No.:',st.state_licence_no)) ) drug_license_no
+            ,st.tax_reg_no GSTIN_No
+            ,(if(st.phone,concat('Ph:',st.phone),'') ) store_phone
+
+            ,s.special_disc_amount
+            ,s.gross_amount
+            ,s.disc_amount
+            ,s.net_amount
+            ,(s.gross_amount-ifnull(s.disc_amount,0)) total_taxable_amount
+            ,s.roundoff
+
+            ,'Bill of Supply' cash_memo_header
+            ,'Amt**' amount_lable
+            ,case -- for isReprint
+              when $P{W_IsReprint}=0 then ''
+              else concat('Reprint: ',$P{W_ReprintCount}) end reprint_leble
+             ,st.is_exclusive
+            ,case
+              when st.is_exclusive=1 then 'Tax%'
+              else '' end Tax_lable
+            ,case
+              when st.is_exclusive=1 then 'Taxable'
+              else '' end Taxable_lable
+            ,case
+              when st.is_exclusive=1 then 'CGST%'
+              else '' end CGST_lable
+            ,case
+              when st.is_exclusive=1 then 'CGST AMT'
+              else '' end CGST_AMT_lable
+            ,case
+              when st.is_exclusive=1 then 'SGST%'
+              else '' end SGST_lable
+            ,case
+              when st.is_exclusive=1 then 'SGST AMT'
+              else '' end SGST_AMT_lable
+            ,concat(substring(sch.name,1,1),substring(replace(sch.name,' ',''),-2)) schedule_name
+
+
+      from gen_m_store st
+      inner join sal_t_sale s on st.id = s.store_id
+      inner join sal_t_sale_details sd on s.id=sd.sale_id
+      inner join in_m_item i on sd.item_id=i.id
+      inner join in_m_unit u on i.pack_unit_id=u.id
+      left outer join in_m_tax t on sd.tax_id=t.id
+      left outer join sal_t_sale_details_tax_mapping tm on sd.id=tm.sale_details_id
+      left outer join in_m_manufacturer m on i.manufacturer_id=m.id
+      left outer join in_m_schedule sch on i.schedule_id=sch.id
+      left outer join in_m_customer c on s.customer_id=c.id
+      left outer join in_m_doctor d on s.doctor_id=d.id
+      left outer join sal_t_sale_return_mapping srm on s.id=srm.sale_id
+      where s.company_id = $P{W_CompanyID}
+      and s.store_id = $P{W_StoreID}
+      and st.id=$P{W_StoreID}
+      and sd.sale_id=$P{W_SaleID}
+
+
+  )x
+  group by   x.item_id
+            ,x.item_name
+            ,x.batch_no
+            ,x.expiry_date
+            ,x.expiry_date_format
+            ,x.pack_unit_id
+            ,x.pack_unit_name
+            ,x.pack_qty
+            ,x.conversion
+            ,x.loose_unit_id
+            ,x.loose_qty
+            ,x.mrp
+            ,x.rate
+            ,x.mrp_per_unit
+            ,x.rate_per_unit
+            ,x.disc_per
+            ,x.disc
+            ,x.tot_amount
+            ,x.calculate_loose_qty
+
+
+
+            ,x.tax_id
+            ,x.tax_name
+            ,x.tax_percentage
+            ,x.tax_amount
+            ,x.is_group_tax
+            ,x.tax_mode
+
+            ,x.SKU
+            ,x.HSN_code
+            ,x.purchase_cost_per_unit
+
+            ,x.total_amount
+            ,x.taxable_amount
+
+            ,x.net_content
+            ,x.group_id
+            ,x.schedule_id
+            ,x.manufacturer_id
+            ,x.manufacturer_name
+            ,x.manufacturer_code
+
+            ,x.customer_name
+            ,x.customer_phone
+            ,x.customer_address
+            ,x.doctor_name
+
+            ,x.inv_no
+            ,x.inv_date
+            ,x.inv_time
+
+            ,x.store_name
+            ,x.store_details
+            ,x.drug_license_no
+            ,x.GSTIN_No
+            ,x.store_phone
+
+            ,x.special_disc_amount
+            ,x.gross_amount
+            ,x.disc_amount
+            ,x.total_taxable_amount
+            ,x.roundoff
+            ,x.net_amount
+
+            ,x.cash_memo_header
+            ,x.amount_lable
+            ,x.reprint_leble
+            ,x.is_exclusive
+
+            ,x.Tax_lable
+            ,x.Taxable_lable
+            ,x.CGST_lable
+            ,x.CGST_AMT_lable
+            ,x.SGST_lable
+            ,x.SGST_AMT_lable
+            ,x.schedule_name
+)a
+ ;]]>
+	</queryString>
+	<field name="item_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String"/>
+	<field name="batch_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiry_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiry_date_format" class="java.lang.String"/>
+	<field name="pack_unit_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pack_unit_name" class="java.lang.String"/>
+	<field name="pack_qty" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="conversion" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="loose_unit_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="loose_qty" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="mrp" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rate" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="mrp_per_unit" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rate_per_unit" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="disc_per" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="disc" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tot_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="calculate_loose_qty" class="java.math.BigInteger">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tax_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tax_name" class="java.lang.String"/>
+	<field name="tax_percentage" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tax_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="is_group_tax" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tax_mode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="SKU" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="HSN_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="purchase_cost_per_unit" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_amount" class="java.math.BigDecimal"/>
+	<field name="taxable_amount" class="java.math.BigDecimal"/>
+	<field name="CGST" class="java.math.BigDecimal"/>
+	<field name="CGST_percentage" class="java.math.BigDecimal"/>
+	<field name="SGST" class="java.math.BigDecimal"/>
+	<field name="SGST_percentage" class="java.math.BigDecimal"/>
+	<field name="IGST" class="java.math.BigDecimal"/>
+	<field name="IGST_percentage" class="java.math.BigDecimal"/>
+	<field name="CGST_print" class="java.lang.String"/>
+	<field name="SGST_print" class="java.lang.String"/>
+	<field name="IGST_print" class="java.lang.String"/>
+	<field name="net_content" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="group_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="schedule_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="manufacturer_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="manufacturer_name" class="java.lang.String"/>
+	<field name="manufacturer_code" class="java.lang.String"/>
+	<field name="customer_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="customer_phone" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="customer_address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="doctor_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="store_name" class="java.lang.String"/>
+	<field name="store_details" class="java.lang.String"/>
+	<field name="drug_license_no" class="java.lang.String"/>
+	<field name="GSTIN_No" class="java.lang.String"/>
+	<field name="store_phone" class="java.lang.String"/>
+	<field name="special_disc_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="gross_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="disc_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_taxable_amount" class="java.math.BigDecimal"/>
+	<field name="roundoff" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="net_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="net_amount_words" class="java.lang.String"/>
+	<field name="special_disc_amount_print" class="java.lang.String"/>
+	<field name="roundoff_print" class="java.lang.String"/>
+	<field name="gross_amount_print" class="java.lang.String"/>
+	<field name="disc_amount_print" class="java.lang.String"/>
+	<field name="retrun_amount" class="java.lang.String"/>
+	<field name="bill_amount" class="java.lang.String"/>
+	<field name="cash_memo_header" class="java.lang.String"/>
+	<field name="amount_lable" class="java.lang.String"/>
+	<field name="reprint_leble" class="java.lang.String"/>
+	<field name="is_exclusive" class="java.lang.Integer">
+		<fieldDescription><![CDATA[0-- tax inclusive on rate/mrp :: 1-- tax exclusive on rate/mrp]]></fieldDescription>
+	</field>
+	<field name="Tax_lable" class="java.lang.String"/>
+	<field name="Taxable_lable" class="java.lang.String"/>
+	<field name="CGST_lable" class="java.lang.String"/>
+	<field name="CGST_AMT_lable" class="java.lang.String"/>
+	<field name="SGST_lable" class="java.lang.String"/>
+	<field name="SGST_AMT_lable" class="java.lang.String"/>
+	<field name="schedule_name" class="java.lang.String"/>
+	<variable name="currentPage" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[$V{PAGE_NUMBER}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="total_csgt" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{CGST}]]></variableExpression>
+	</variable>
+	<variable name="total_sgst" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{SGST}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="115">
+			<textField isBlankWhenNull="true">
+				<reportElement x="116" y="13" width="310" height="15" uuid="d030fffc-3bb4-4163-b614-5860ee880ff7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Consolas" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="41" width="551" height="12" uuid="bd98f7fe-ed0b-4acc-9299-72fb37574952"/>
+				<textElement textAlignment="Center">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_details}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="53" width="551" height="12" uuid="9c81e36e-b06b-409e-b548-196b937503d9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Consolas"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{drug_license_no}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="65" width="297" height="12" uuid="a6e201c7-005d-40e8-b0f0-02bfb520d66b"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{customer_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="77" width="297" height="12" uuid="eec27078-ebfc-4b6f-a255-82603147d690"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{customer_phone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="89" width="297" height="12" uuid="17f6a985-2a8b-4de6-9061-5fc3c3e88dbf"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{customer_address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="102" width="297" height="12" uuid="8d06aa80-d241-4008-aeff-21952c90e766"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{doctor_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="345" y="65" width="208" height="12" uuid="5582396b-3621-404f-91a4-32cc866e32ef"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inv_no}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="345" y="77" width="95" height="12" uuid="b51760a4-e070-493b-b404-44376f5db9d5"/>
+				<textElement>
+					<font fontName="Consolas"/>
+				</textElement>
+				<text><![CDATA[Cash Memo Date:]]></text>
+			</staticText>
+			<textField pattern="dd.MM.yy" isBlankWhenNull="true">
+				<reportElement x="440" y="77" width="113" height="12" uuid="22548be0-8e17-4e38-b849-037a7da2aae5"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inv_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="345" y="89" width="65" height="12" uuid="9d361540-7ecd-4261-990d-9ecc8643b5d2"/>
+				<textElement>
+					<font fontName="Consolas"/>
+				</textElement>
+				<text><![CDATA[Date Time:]]></text>
+			</staticText>
+			<textField pattern="dd.MM.yy HH:mm:ss">
+				<reportElement x="411" y="89" width="142" height="12" uuid="a49ad113-2e1c-458e-a144-59ceee3664fc"/>
+				<textElement>
+					<font fontName="Consolas"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="345" y="102" width="208" height="12" uuid="dd763db1-f66e-4bd8-8104-dfe57174c3b1"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{GSTIN_No}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="116" y="1" width="310" height="12" uuid="85914903-6c3e-48a3-b18e-7f51aa76f793"/>
+				<textElement textAlignment="Center">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cash_memo_header}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="440" y="1" width="112" height="12" uuid="d4eb8678-36c6-4a52-a2d3-f5f52443fe57"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reprint_leble}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="187" y="29" width="161" height="12" uuid="4fe7c1b7-5b23-426e-92ac-894d2aed649d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Chemist & Druggist"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="358" y="29" width="195" height="12" uuid="259e618f-cb03-4ae2-b81d-0882092e4cec"/>
+				<textElement textAlignment="Center">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{store_phone}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="16" splitType="Prevent">
+			<staticText>
+				<reportElement x="23" y="1" width="57" height="11" uuid="3ab990e7-5a6f-4e87-9a8e-9659f9387a15"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[ITEM NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="264" y="1" width="44" height="11" uuid="9605bebd-cf7f-468f-8fd8-850c76699951"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[HSN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="308" y="1" width="34" height="11" uuid="10f44a0e-5e66-4a77-8e09-4ad6239bdf3e"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[QTY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="343" y="1" width="47" height="11" uuid="83b878b0-9769-4d03-8561-84c58d832da4"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[BATCH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="391" y="1" width="30" height="11" uuid="de2e3d57-660c-4982-aaff-82fc70f80737"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[EXP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="135" y="1" width="36" height="11" uuid="104da173-6439-48ec-b8eb-89659bead2ff"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[UNIT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="421" y="1" width="37" height="11" uuid="986454b7-4105-4d7b-a0c0-e14b9d8621b7"/>
+				<textElement textAlignment="Right">
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[RATE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="459" y="1" width="35" height="11" uuid="102c0e1a-6e04-45ff-87bc-56c9d2117dc3"/>
+				<textElement textAlignment="Right">
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[DISC]]></text>
+			</staticText>
+			<line>
+				<reportElement x="3" y="15" width="548" height="1" uuid="fe0af772-8bf5-45f1-8f97-cc3bf1c5b0fd"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="1" width="19" height="11" uuid="5588abf8-1c63-40b5-a8b6-d3b1771317b1"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[SL]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+				<reportElement x="496" y="1" width="47" height="11" uuid="bd102f57-99a4-462e-aba0-0303935a02a6"/>
+				<textElement textAlignment="Right">
+					<font fontName="Consolas" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["AMT**"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="172" y="1" width="46" height="11" uuid="1bad85e4-76d4-489f-9772-76ff3d6bed91"/>
+				<textElement>
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[MFG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="1" width="42" height="11" uuid="15583dbd-ddad-47f4-8390-52174b15b3ff"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="9"/>
+				</textElement>
+				<text><![CDATA[SCH]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15">
+			<textField isBlankWhenNull="true">
+				<reportElement x="22" y="1" width="113" height="13" uuid="a129d402-a2e8-4715-a258-aebd86825721"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $F{item_name}.length()>20 ? $F{item_name}.substring(0,18) + ".." : $F{item_name} )]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="264" y="1" width="44" height="13" uuid="1be6ec70-8766-49a0-a748-52b940666245"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HSN_code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="309" y="1" width="33" height="13" uuid="fa267129-e454-49d1-9720-9bfe7eb7b614"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{calculate_loose_qty}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="343" y="1" width="47" height="13" uuid="c760614e-3a5d-4e01-a6f8-3496e354f01c"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{batch_no}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="391" y="1" width="30" height="13" uuid="441cd1ca-c823-4c90-b30c-0c31daef0e01"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expiry_date_format}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="135" y="1" width="36" height="13" uuid="d7460eb0-905f-4a6b-b367-db994d6d916f"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pack_unit_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+				<reportElement x="421" y="1" width="37" height="13" uuid="041169cd-d866-4294-9eb5-9429b6926d34"/>
+				<textElement textAlignment="Right">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rate_per_unit}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+				<reportElement x="459" y="1" width="36" height="13" uuid="2bcfeedc-27c1-4c46-81cc-7b7b4936cbc7"/>
+				<textElement textAlignment="Right">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{disc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00" isBlankWhenNull="true">
+				<reportElement x="496" y="1" width="47" height="13" uuid="3ea0969d-8e94-4e30-a30d-c7ace271d8f6"/>
+				<textElement textAlignment="Right">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{taxable_amount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="1" width="19" height="13" uuid="8dc4ed82-961b-4340-aa47-d3c539ca5372"/>
+				<textElement>
+					<font fontName="Consolas" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="171" y="1" width="47" height="13" uuid="a5b72dcc-92b1-4182-b74c-6611b620d92c"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{manufacturer_code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="219" y="1" width="42" height="13" uuid="f255ab94-77fd-41d8-97bd-bcbadde009a5"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{schedule_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="135"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="135">
+			<line>
+				<reportElement x="3" y="1" width="548" height="1" uuid="3eb576f0-ac38-46a6-b602-06e4aec78d2d"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="3" width="155" height="11" uuid="330297c4-6f6e-410c-b203-388b06b2ab1f"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gross_amount_print}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="34" y="70" width="315" height="13" uuid="dd4ad4c8-02af-4aa0-8680-160a157bb882"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Sig. of Salesman                                                     Sig. of Pharmacist]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="3" y="31" width="342" height="13" uuid="2a69c829-fbb7-415d-b0b0-800094c8e070"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{W_Note2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="4" width="378" height="12" uuid="d7a7348e-5d16-4b9b-bc5f-c01f22bb77a4"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{net_amount_words}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="3" y="18" width="342" height="12" uuid="c7dc18f8-3e34-4184-9def-51257a605446"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{W_Note1}.equals(null)?"Note: ":"Note: "+$P{W_Note1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="15" width="155" height="11" uuid="604d489f-a0f7-405c-aff1-833d98f53cda"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{disc_amount_print}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="27" width="155" height="11" uuid="cec92c63-1408-4731-a7e7-963a326b8a09"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{retrun_amount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="39" width="155" height="11" uuid="c289928f-0c27-494e-adaa-1ee90ecc05f9"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{roundoff_print}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="394" y="51" width="155" height="1" uuid="c0a094b2-e2e1-4a40-b519-50569fee10dc"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="53" width="155" height="12" uuid="52e3b8c5-50c9-421d-8de7-ba999dbf74fd"/>
+				<textElement textAlignment="Left">
+					<font fontName="Consolas" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bill_amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+</jasperReport>

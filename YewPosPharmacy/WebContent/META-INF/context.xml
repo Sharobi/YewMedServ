@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context antiJARLocking="true" path="/">
+	<Resource name="jdbc/PharmaApp" 
+	    	 
+	    	type="javax.sql.DataSource"
+			factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+			driverClassName="com.mysql.jdbc.Driver"
+	 		url="jdbc:mysql://192.168.1.133:3306/pharmacypos"
+			username="root"
+			password="root"
+			initialSize="10"
+			maxActive="600"
+			maxIdle="300"
+			minIdle="100"
+			maxWait="30000"
+			validationQuery="SELECT 1"
+	 		testOnBorrow="true"
+	 		minEvictableIdleTimeMillis="5000"
+	 		removeAbandoned="true"
+			removeAbandonedTimeout="90"
+			logAbandoned="false"/>
+
+</Context>
+
+<!--
+url="jdbc:mysql://192.168.1.198:3306/pharmacyposnew_2019_03_12"
+url="jdbc:mysql://192.168.1.198:3306/pharmacypos_20190221"
+			username="root"
+			password="root"
+ url="jdbc:mysql://192.168.1.157:3306/pharmacypos"
+url="jdbc:mysql://192.168.1.198:3306/pharmacyposnew"
+password="redhat@123" Sharobi@123-->  

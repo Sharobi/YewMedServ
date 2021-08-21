@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="HSN" pageWidth="940" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="920" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="20" uuid="5cabdd2a-9eaa-4a9f-8dd8-6777e814a786">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="291"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.sheet.names.all" value="Data/Footnotes"/>
+	<property name="net.sf.jasperreports.exports.xls.font.size.fix.enabled" value="true"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="W_companyID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="W_storeID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_finyrID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="W_startDate" class="java.util.Date"/>
+	<parameter name="W_endDate" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select
+       a.item_id
+                 ,sum(a.tax_amount) tax_amount
+                 ,sum(a.taxable_amount) taxable_amount
+                 ,sum(a.total_amount) total_amount
+                 ,sum(a.CGST) CGST
+                 ,sum(a.SGST) SGST
+                 ,sum(a.IGST) IGST
+
+
+                 ,a.item_name
+                 ,a.HSN_code
+                 ,sum(a.qty) qty
+                 ,a.unit_code
+                 ,0 cess_amount
+                 ,0 total_cess_amount
+                ,(
+                  select sum(amount-disc) from sal_t_sale_details
+                  where company_id =$P{W_companyID}
+                    and store_id = $P{W_storeID}
+                    and finyr_id  = $P{W_finyrID}
+                    and inv_date >= $P{W_startDate} and inv_date <= $P{W_endDate}
+                    and tax_percentage > 0
+                ) total_taxable_amount
+                ,(
+                  select sum(amount) from sal_t_sale_details
+                  where company_id =$P{W_companyID}
+                    and store_id = $P{W_storeID}
+                    and finyr_id  = $P{W_finyrID}
+                    and inv_date >= $P{W_startDate} and inv_date <= $P{W_endDate}
+                    and tax_percentage > 0
+                ) total_total_amount
+                ,(
+                  select sum(tm.amount) from sal_t_sale_details sd
+                  inner join sal_t_sale_details_tax_mapping tm on  sd.id=tm.sale_details_id
+                  where sd.company_id =$P{W_companyID}
+                    and sd.store_id = $P{W_storeID}
+                    and sd.finyr_id  = $P{W_finyrID}
+                    and sd.inv_date >= $P{W_startDate} and sd.inv_date <= $P{W_endDate}
+                    and sd.tax_percentage > 0
+                    and tm.tax_mode='CGST'
+                ) CGST_amount
+               ,(
+                  select sum(tm.amount) from sal_t_sale_details sd
+                  inner join sal_t_sale_details_tax_mapping tm on  sd.id=tm.sale_details_id
+                  where sd.company_id =$P{W_companyID}
+                    and sd.store_id = $P{W_storeID}
+                    and sd.finyr_id  = $P{W_finyrID}
+                    and sd.inv_date >= $P{W_startDate} and sd.inv_date <= $P{W_endDate}
+                    and sd.tax_percentage > 0
+                    and tm.tax_mode='SGST'
+                ) SGST_amount
+                ,(
+                  select sum(tm.amount) from sal_t_sale_details sd
+                  inner join sal_t_sale_details_tax_mapping tm on  sd.id=tm.sale_details_id
+                  where sd.company_id =$P{W_companyID}
+                    and sd.store_id = $P{W_storeID}
+                    and sd.finyr_id  = $P{W_finyrID}
+                    and sd.inv_date >= $P{W_startDate} and sd.inv_date <= $P{W_endDate}
+                    and sd.tax_percentage > 0
+                    and tm.tax_mode='IGST'
+                ) IGST_amount
+  from
+  (
+    select         x.item_id
+                  ,x.batch_no
+                  ,x.expiry_date
+
+                  ,x.tot_amount
+
+                  ,x.tax_id
+                  ,x.tax_percentage
+                  ,x.tax_amount
+                  ,x.is_group_tax
+                  ,x.tax_mode
+
+                  ,x.taxable_amount
+                  ,x.total_amount
+
+                  ,sum(x.CGST) CGST
+                  ,sum(x.SGST) SGST
+                  ,sum(x.IGST) IGST
+
+
+
+
+                  ,x.item_name
+                  ,x.HSN_code
+                  ,x.qty
+                  ,x.unit_code
+
+    from
+    (
+
+            select sd.item_id
+                  ,sd.batch_no
+                  ,sd.expiry_date
+
+                  ,sd.tot_amount
+
+                  ,sd.tax_id
+                  ,sd.tax_percentage
+                  ,sd.tax_amount
+                  ,sd.is_group_tax
+                  ,sd.tax_mode
+
+                  ,(sd.amount-sd.disc) taxable_amount
+                  ,(sd.amount) total_amount
+
+                  ,case
+                   when tm.tax_mode='CGST' then tm.amount
+                   else 0 end CGST
+                  ,case
+                         when tm.tax_mode='SGST' then tm.amount
+                         else 0 end SGST
+                  ,case
+                         when tm.tax_mode='IGST' then tm.amount
+                         else 0 end IGST
+
+
+
+                  ,i.name item_name
+                  ,i.HSN_code
+
+                  ,((sd.pack_qty*sd.conversion)+sd.loose_qty) qty
+                  ,u.code unit_code
+
+            from sal_t_sale s
+            inner join sal_t_sale_details sd on s.id=sd.sale_id
+            left outer join sal_t_sale_details_tax_mapping tm on sd.id=tm.sale_details_id
+            left outer join in_m_item i on sd.item_id=i.id
+            left outer join in_m_unit u on i.pack_unit_id=u.id
+
+
+
+            where s.company_id =$P{W_companyID}
+            and s.store_id = $P{W_storeID}
+            and s.finyr_id  = $P{W_finyrID}
+            and s.inv_date >= $P{W_startDate} and s.inv_date <= $P{W_endDate}
+            and sd.tax_percentage > 0
+
+    )x group by x.item_id
+                  ,x.batch_no
+                  ,x.expiry_date
+
+                  ,x.tot_amount
+
+                  ,x.tax_id
+                  ,x.tax_percentage
+                  ,x.tax_amount
+                  ,x.is_group_tax
+                  ,x.tax_mode
+
+                  ,x.taxable_amount
+                  ,x.total_amount
+
+
+                  ,x.item_name
+                  ,x.HSN_code
+                  ,x.qty
+                  ,x.unit_code
+   )a
+   group by a.item_id
+            ,a.item_name
+            ,a.HSN_code
+            ,a.unit_code
+
+
+
+
+
+
+
+ ;]]>
+	</queryString>
+	<field name="item_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tax_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="taxable_amount" class="java.math.BigDecimal"/>
+	<field name="total_amount" class="java.math.BigDecimal"/>
+	<field name="CGST" class="java.math.BigDecimal"/>
+	<field name="SGST" class="java.math.BigDecimal"/>
+	<field name="IGST" class="java.math.BigDecimal"/>
+	<field name="item_name" class="java.lang.String"/>
+	<field name="HSN_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="qty" class="java.math.BigDecimal"/>
+	<field name="unit_code" class="java.lang.String"/>
+	<field name="cess_amount" class="java.lang.Long"/>
+	<field name="total_cess_amount" class="java.lang.Long"/>
+	<field name="total_taxable_amount" class="java.math.BigDecimal"/>
+	<field name="total_total_amount" class="java.math.BigDecimal"/>
+	<field name="CGST_amount" class="java.math.BigDecimal"/>
+	<field name="SGST_amount" class="java.math.BigDecimal"/>
+	<field name="IGST_amount" class="java.math.BigDecimal"/>
+	<variable name="total_taxable" class="java.math.BigDecimal" resetType="None" incrementType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{taxable_amount}]]></variableExpression>
+	</variable>
+	<variable name="total_cess" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{cess_amount}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="41" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="42">
+			<staticText>
+				<reportElement x="0" y="28" width="111" height="14" uuid="a6f7061d-a239-4969-9457-97ca921601a9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[No. of HSN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="401" y="28" width="101" height="14" uuid="6f25ae40-f245-406c-b51d-990f29ae3ee9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Taxable Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="113" y="28" width="108" height="14" uuid="49a6dac1-b819-437d-92ec-6146ca4833ae"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="111" height="14" uuid="5237019e-44ff-49a1-8de0-4d91664842a1"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Summary For HSN(12)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="851" y="28" width="67" height="14" uuid="24c83eb1-83b9-44c3-8b47-1e02133a26a4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Cess Amount]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="401" y="14" width="101" height="14" uuid="f1ce65f0-d644-48f1-86f1-e4fbe75135a0"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_taxable_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="851" y="14" width="67" height="14" uuid="7f90fbcb-1a71-4559-8363-e7dd48a12337"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_cess_amount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="401" y="0" width="101" height="14" uuid="6bcfa2ca-d114-4213-8540-07c32717bb35"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Taxable Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="851" y="0" width="67" height="14" uuid="844cb66f-5de7-470c-aee0-6faff4b276ea"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Cess Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="222" y="28" width="30" height="14" uuid="e5d1300f-0312-4041-939c-14abe1c96d4d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[UQC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="253" y="28" width="45" height="14" uuid="dd14cb23-40b4-4f89-9267-97a03a41f70b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Total Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="0" width="101" height="14" uuid="e44337a3-f239-4854-a8e0-057bff7ac27e"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Value]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="299" y="14" width="101" height="14" uuid="8ce9e573-fbce-48c2-8fc7-4566ac3de7a9"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_total_amount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="299" y="28" width="101" height="14" uuid="8fdf9771-9f5b-4e16-a466-468168dd28b9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Total Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="503" y="0" width="115" height="14" uuid="bd73b287-0851-41dc-a706-d195c7a0fdf1"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Integrated Tax]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="503" y="14" width="115" height="14" uuid="2382181d-cd76-40b5-8b7b-41f5a14f2892"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{IGST_amount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="503" y="28" width="115" height="14" uuid="21008f05-6edc-4097-aca2-ddc958cb438f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Integrated Tax Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="619" y="0" width="115" height="14" uuid="040802dd-84c2-4a5d-ad73-39b6bb7f3636"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Central Tax]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="619" y="14" width="115" height="14" uuid="67d6f962-b335-486c-98e5-f1272db574b8"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CGST_amount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="619" y="28" width="115" height="14" uuid="ea92b1c8-5421-4177-ae43-2fb2dd675917"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Central Tax Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="735" y="28" width="115" height="14" uuid="554a08c8-c354-4e7f-bb50-25b1c5063f8e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[State/UT Tax Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="735" y="0" width="115" height="14" uuid="5609cf17-1608-4d39-aa2c-c733654a7849"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total State/UT Tax]]></text>
+			</staticText>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="735" y="14" width="115" height="14" uuid="e73cb632-7603-488d-a3ed-4f1585811014"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SGST_amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField pattern="###0.00">
+				<reportElement x="401" y="1" width="101" height="14" uuid="4b8c599e-bc76-4640-a06c-e3935f049043"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{taxable_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="113" y="1" width="108" height="14" uuid="2c2df010-9ca9-466e-9c13-3937f4d13ce3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement x="0" y="1" width="111" height="14" uuid="ffc7fb3b-501e-4b85-a245-3a3c6d721bbd"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HSN_code}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="851" y="1" width="67" height="14" uuid="b15eb89b-30b1-4b7f-85d5-0cae91e3d4b2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cess_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="222" y="1" width="30" height="14" uuid="41345c71-9619-42b4-ba2e-c22ca4ab6137"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{unit_code}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="253" y="1" width="45" height="14" uuid="9e025308-7ba1-4661-bc09-2cfcab493024"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="299" y="1" width="101" height="14" uuid="da7c72f0-f4cc-44f2-8fd1-73a14f3d72e5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="503" y="1" width="115" height="14" uuid="816e4f24-3393-4034-aae7-5e82defb6bca"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{IGST}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="619" y="1" width="115" height="14" uuid="dc6d05f8-3ed3-4f81-89d2-67b8392e4c5d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CGST}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="735" y="1" width="115" height="14" uuid="0b32270f-1aa8-438d-b056-bc700eefc2b8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SGST}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="14" splitType="Stretch"/>
+	</summary>
+</jasperReport>
